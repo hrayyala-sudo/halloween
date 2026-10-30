@@ -249,5 +249,8 @@ Use code with caution.
 speak_like_a_monster("WwooooooOooooo. You have discovered the final room. Master programmer. Goodbye.", 1.2, 0.7)
 st.success("The Grand Phantom has recognized your high achievement! 🏆")
 
+--- FOOTER ---
+
 st.markdown("
 Made with 🧡 and 🔮 by a Spooky Developer", unsafe_allow_html=True)
+
