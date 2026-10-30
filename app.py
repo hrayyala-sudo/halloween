@@ -154,15 +154,15 @@ elif page == "🔮 Monster Mash Soundboard":
     with c1:
         if st.button("🐺 Werewolf"):
             st.markdown("### *AWOOOOOOOOO!* 🌕")
-            play_spooky_sound("https://soundboard.com")
+            play_spooky_sound("https://wikimedia.org")
     with c2:
-        if st.button("🧛 Vampire"):
-            st.markdown("### *I vant to drink your code!* 🩸")
-            play_spooky_sound("https://soundboard.com")
+        if st.button("😈 Evil Laugh"):
+            st.markdown("### *MWAHAHAHAHA!* 🧛")
+            play_spooky_sound("https://wikimedia.org")
     with c3:
-        if st.button("🧟 Zombie"):
-            st.markdown("### *Braaaaains... and dataaaa...* 🧠")
-            play_spooky_sound("https://soundboard.com")
+        if st.button("👻 Ghost"):
+            st.markdown("### *BOOOOOOOO!* 🧠")
+            play_spooky_sound("https://wikimedia.org")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
