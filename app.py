@@ -10,6 +10,18 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Initialize Session State tracking for Easter Eggs
+if "egg_porch" not in st.session_state:
+    st.session_state.egg_porch = False
+if "egg_story" not in st.session_state:
+    st.session_state.egg_story = False
+if "egg_candy" not in st.session_state:
+    st.session_state.egg_candy = False
+if "draw_count" not in st.session_state:
+    st.session_state.draw_count = 0
+if "ghost_dimension_unlocked" not in st.session_state:
+    st.session_state.ghost_dimension_unlocked = False
+
 # Custom CSS for Halloween Vibe & Animations
 st.markdown("""
     <style>
@@ -50,13 +62,17 @@ st.markdown("""
         50% { transform: translate(0, -15px); }
         100% { transform: translate(0, 0px); }
     }
-    .ghost {
-        font-size: 40px;
+    .ghost-style {
+        font-size: 50px;
         animation: float 3s ease-in-out infinite;
         text-align: center;
+        margin-bottom: -10px;
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Check if all Easter Eggs are found
+all_eggs_found = st.session_state.egg_porch and st.session_state.egg_story and st.session_state.egg_candy
 
 # Unblockable Native Browser Speech Generator with Monster Voice Modifiers
 def speak_like_a_monster(text, pitch, rate):
@@ -75,15 +91,33 @@ def speak_like_a_monster(text, pitch, rate):
     """
     st.components.v1.html(js_html, height=0)
 
-# --- HEADER ---
-st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
+# --- HEADER & FLOATING GHOST EASTER EGG TRACKING ---
+st.markdown("<div class='ghost-style'>👻</div>", unsafe_allow_html=True)
+
+# If all eggs are found, render a clickable ghost action layout link
+if all_eggs_found:
+    if st.button("✨ The Floating Ghost is glowing! CLICK ME! ✨", use_container_width=True):
+        st.session_state.ghost_dimension_unlocked = True
+        st.toast("The air grows cold... A secret room has opened in the sidebar!", icon="🔮")
+
 st.title("🎃 The Haunted Streamlit Mansion 💀")
 st.write("Welcome, brave traveler... Enter at your own risk. Turn up your imagination and choose your fate below.")
+
+# Easter Egg Progress HUD Tracker (Hidden once everything is done)
+if not all_eggs_found:
+    st.caption(f"🤫 Secrets Discovered: {sum([st.session_state.egg_porch, st.session_state.egg_story, st.session_state.egg_candy])} / 3")
+else:
+    if not st.session_state.ghost_dimension_unlocked:
+        st.info("💡 Complete! All hidden Easter Eggs have been discovered. Quick, click the glowing Ghost button above!")
 
 st.divider()
 
 # --- SIDEBAR / NAVIGATION ---
-page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Soundboard"])
+menu_options = ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Soundboard"]
+if st.session_state.ghost_dimension_unlocked:
+    menu_options.append("🌌 The Ghost Dimension")
+
+page = st.sidebar.selectbox("Choose Your Activity:", menu_options)
 
 # --- PAGE 1: FRONT PORCH ---
 if page == "🚪 Front Porch":
@@ -99,8 +133,12 @@ if page == "🚪 Front Porch":
     # Easter Egg #1 input field box
     secret_knock = st.text_input("Psst... do you know the secret pass-phrase?", placeholder="Type here...")
     if secret_knock.lower() == "neon mint":
+        if not st.session_state.egg_porch:
+            st.session_state.egg_porch = True
+            st.rerun()
+    
+    if st.session_state.egg_porch:
         st.success("🌟 EASTER EGG UNLOCKED: The walls glow bright in green (#05f7bf)!")
-        st.snow()
     
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
@@ -125,6 +163,11 @@ elif page == "📖 Spooky Story Generator":
 
     # Easter Egg #2 trigger within inputs
     if protagonist.lower() == "goofy gang":
+        if not st.session_state.egg_story:
+            st.session_state.egg_story = True
+            st.rerun()
+
+    if st.session_state.egg_story:
         st.warning("👾 EASTER EGG UNLOCKED: Welcome to the official Goofy Gang sanctuary portal! 🚀")
 
     if st.button("🔮 Conjure Story"):
@@ -142,16 +185,14 @@ elif page == "🍬 Trick or Treat Roulette":
     st.header("🍬 Trick or Treat Roulette")
     st.write("Reach into the digital candy bowl. Will you get a delicious treat or a devious trick?")
     
-    # Custom interaction counters for an ongoing tracking egg
-    if "draw_count" not in st.session_state:
-        st.session_state.draw_count = 0
-
     if st.button("🎃 Draw from the Bowl 🍬"):
         st.session_state.draw_count += 1
         
-        # Easter Egg #3: Trigger exactly on the 5th draw
-        if st.session_state.draw_count == 5:
-            st.warning("👀 EASTER EGG UNLOCKED: You found the hidden golden skull token down at the bottom of the bowl! 💀")
+        # Easter Egg #3: Trigger exactly on or after the 5th draw
+        if st.session_state.draw_count >= 5:
+            if not st.session_state.egg_candy:
+                st.session_state.egg_candy = True
+                st.rerun()
             
         outcomes = [
             {"type": "Treat", "text": "You got a King-Sized Peanut Butter Cup! 🍫 (+100 Spooky Points)", "icon": "🎉"},
@@ -168,17 +209,19 @@ elif page == "🍬 Trick or Treat Roulette":
         else:
             st.error(f"{result['icon']} {result['text']}")
 
+    if st.session_state.egg_candy:
+        st.warning("💀 EASTER EGG UNLOCKED: You found the hidden golden skull token down at the bottom of the bowl!")
+
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Turn up your speakers to 100% volume and click a button to hear the pure cinematic vocal creature effects!")
+    st.write("Turn up your speakers and click a button to hear pure creature effects!")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         if st.button("🐺 Werewolf"):
             st.write("🐺 *AWOOOOOOOOO!*")
-            # Uses vowel manipulation for real vocalizations instead of talking words
             speak_like_a_monster("Ah-wwooooo! Ow-ow-ow-wwoooo! Grrrr.", 0.2, 0.7)
     with c2:
         if st.button("🧛 Vampire"):
@@ -189,5 +232,15 @@ elif page == "🔮 Monster Mash Soundboard":
             st.write("🧟 *Braaaaains...*")
             speak_like_a_monster("Uuuuuurrrrgh. Grrrrroaaaannn. Hhhhungggerrr.", 0.1, 0.4)
 
-# --- FOOTER ---
-st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
+# --- SECRET PAGE 5: THE GHOST DIMENSION ---
+elif page == "🌌 The Ghost Dimension" and st.session_state.ghost_dimension_unlocked:
+    st.header("🌌 Room Unlocked: The Ghost Dimension")
+    st.balloons()
+    st.write("""
+    **Congratulations, Ultimate Mansion Explorer!** You have broken through the code layout logic. 
+    The floating ghost welcomes you to the infinite digital ether.
+    """)
+    st.image("https://unsplash.com", 
+             caption="Deep space within the server racks...", use_container_width=True)
+    
+    if st.button("🔮 Summon The Grand Phantom Presence"):
