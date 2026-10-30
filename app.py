@@ -233,14 +233,21 @@ elif page == "🔮 Monster Mash Soundboard":
             speak_like_a_monster("Uuuuuurrrrgh. Grrrrroaaaannn. Hhhhungggerrr.", 0.1, 0.4)
 
 # --- SECRET PAGE 5: THE GHOST DIMENSION ---
-elif page == "🌌 The Ghost Dimension" and st.session_state.ghost_dimension_unlocked:
-    st.header("🌌 Room Unlocked: The Ghost Dimension")
-    st.balloons()
-    st.write("""
-    **Congratulations, Ultimate Mansion Explorer!** You have broken through the code layout logic. 
-    The floating ghost welcomes you to the infinite digital ether.
-    """)
-    st.image("https://unsplash.com", 
-             caption="Deep space within the server racks...", use_container_width=True)
-    
-    if st.button("🔮 Summon The Grand Phantom Presence"):
+elif page == "🌌 The Ghost Dimension":
+    if st.session_state.ghost_dimension_unlocked:
+        st.header("🌌 Room Unlocked: The Ghost Dimension")
+        st.balloons()
+        st.write("""
+        **Congratulations, Ultimate Mansion Explorer!** You have broken through the code layout logic. 
+        The floating ghost welcomes you to the infinite digital ether.
+        """)
+        st.image("https://unsplash.com", 
+                 caption="Deep space within the server racks...", use_container_width=True)
+        
+        if st.button("🔮 Summon The Grand Phantom Presence"):
+Use code with caution.
+speak_like_a_monster("WwooooooOooooo. You have discovered the final room. Master programmer. Goodbye.", 1.2, 0.7)
+st.success("The Grand Phantom has recognized your high achievement! 🏆")
+
+st.markdown("
+Made with 🧡 and 🔮 by a Spooky Developer", unsafe_allow_html=True)
