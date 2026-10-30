@@ -9,7 +9,7 @@ import time
 # ============================================================
 
 st.set_page_config(
-    page_title="The Haunted Streamlit Mansion",
+    page_title="The Haunted Mansion",
     page_icon="🎃",
     layout="centered",
     initial_sidebar_state="expanded"
@@ -103,7 +103,6 @@ h1, h2, h3 {
     margin: 12px 0;
     text-align: center;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -112,7 +111,7 @@ h1, h2, h3 {
 # ============================================================
 
 def speak_like_a_monster(text, pitch=0.7, rate=0.8):
-    """Use the browser's built-in speech generator."""
+
     safe_text = json.dumps(text)
 
     html = f"""
@@ -135,13 +134,16 @@ def speak_like_a_monster(text, pitch=0.7, rate=0.8):
 
 
 def reset_phantom_quest():
+
     st.session_state.quest_round = 1
     st.session_state.quest_score = 0
     st.session_state.quest_safe_door = random.randint(1, 3)
     st.session_state.quest_failed = False
+    st.session_state.phantom_quest_completed = False
 
 
 def reset_graveyard_game():
+
     st.session_state.graveyard_round = 1
     st.session_state.graveyard_score = 0
     st.session_state.graveyard_completed = False
@@ -166,11 +168,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("🎃 The Haunted Streamlit Mansion 💀")
+st.title("🎃 The Haunted Mansion 💀")
 
 st.write(
     "Welcome, brave traveler... Enter at your own risk. "
-    "Turn up your imagination and choose your fate below."
+    "The ghosts, witches, and monsters are waiting for you!"
 )
 
 # ============================================================
@@ -188,14 +190,19 @@ if all_eggs_found and not st.session_state.ghost_dimension_unlocked:
         "✨ The Floating Ghost is glowing! CLICK ME! ✨",
         use_container_width=True
     ):
+
         st.session_state.ghost_dimension_unlocked = True
+
         st.toast(
             "The air grows cold... A secret room has opened!",
             icon="🔮"
         )
+
         st.rerun()
 
+
 if not all_eggs_found:
+
     discovered = sum([
         st.session_state.egg_porch,
         st.session_state.egg_story,
@@ -248,22 +255,25 @@ if page == "🚪 Front Porch":
     )
 
     st.write("""
-    You stand before a creaking, old Victorian mansion.
+    You stand before a mysterious Victorian mansion.
 
-    The wind howls, and the moon is full.
+    The wind howls, the trees are swaying, and the moon
+    shines brightly over the dark entrance.
 
-    What secrets lie within these digital walls?
-    Use the sidebar menu to explore the haunted rooms!
+    Strange shadows move behind the windows.
+
+    What secrets are hidden inside?
+    Use the sidebar to explore the haunted rooms!
     """)
 
     if st.button("Knock on the Door 🚪"):
 
-        with st.spinner("Creaaaaak..."):
+        with st.spinner("The door is slowly opening..."):
             time.sleep(1)
 
         st.error(
-            "A disembodied voice whispers: "
-            "'Who dares disturb the Streamlit code?!'"
+            "A mysterious voice whispers: "
+            "'Who dares enter my haunted mansion?!'"
         )
 
         st.balloons()
@@ -296,6 +306,7 @@ if page == "🚪 Front Porch":
             st.balloons()
 
         else:
+
             st.warning("That is not the secret phrase. Try again!")
 
     if st.session_state.egg_porch:
@@ -310,42 +321,44 @@ elif page == "📖 Spooky Story Generator":
     st.header("📜 Create Your Own Spooky Tale")
 
     st.write(
-        "Fill out the blanks to conjure a custom "
-        "terrifying or hilarious Halloween story."
+        "Fill in the blanks to create your own "
+        "spooky, funny, or terrifying Halloween story!"
     )
 
     col1, col2 = st.columns(2)
 
     with col1:
+
         protagonist = st.text_input(
             "Main Character's Name",
-            value="Professor Code"
+            value="Count Dracula"
         )
 
         adjective = st.text_input(
             "Spooky Adjective",
-            value="slimy"
+            value="creepy"
         )
 
         creature = st.text_input(
-            "Monster/Creature",
-            value="Python Bug"
+            "Monster or Creature",
+            value="Vampire"
         )
 
     with col2:
+
         place = st.text_input(
             "Creepy Place",
-            value="The Server Room"
+            value="The Haunted Castle"
         )
 
         object_held = st.text_input(
             "An Object",
-            value="Keyboard"
+            value="Magic Wand"
         )
 
         exclamation = st.text_input(
             "Scared Exclamation",
-            value="Syntax Error!"
+            value="Help! A Ghost!"
         )
 
     if st.button("🔮 Conjure Story"):
@@ -353,18 +366,22 @@ elif page == "📖 Spooky Story Generator":
         story = f"""
         It was a dark and stormy night at {place}.
 
-        {protagonist} was minding their own business
+        {protagonist} was walking through the dark hallway
         when suddenly, a {adjective} {creature}
-        burst through the wall!
+        appeared from behind a mysterious curtain!
 
-        {protagonist} gasped, dropping their
-        {object_held} and screaming, "{exclamation}!"
+        {protagonist} screamed, dropped their
+        {object_held}, and shouted "{exclamation}!"
 
-        But it was too late. The {creature} didn't
-        want to eat them. It just wanted to review
-        their code.
+        The monster began to laugh and chased
+        {protagonist} through the haunted castle.
 
-        They lived happily and bug-free ever after.
+        Just when everything seemed hopeless,
+        a friendly witch appeared and cast a spell.
+
+        The monster disappeared in a cloud of purple smoke.
+
+        {protagonist} was safe... for now.
 
         THE END.
         """
@@ -372,7 +389,6 @@ elif page == "📖 Spooky Story Generator":
         st.session_state.story_text = story
         st.session_state.story_generated = True
 
-        # Easter Egg #2
         if protagonist.strip().lower() == "goofy gang":
             st.session_state.egg_story = True
 
@@ -401,7 +417,7 @@ elif page == "🍬 Trick or Treat Roulette":
     st.header("🍬 Trick or Treat Roulette")
 
     st.write(
-        "Reach into the digital candy bowl. "
+        "Reach into the magical candy bowl. "
         "Will you get a delicious treat or a devious trick?"
     )
 
@@ -444,7 +460,7 @@ elif page == "🍬 Trick or Treat Roulette":
             },
             {
                 "type": "Trick",
-                "text": "Your path has been cursed! 🔮",
+                "text": "A witch has placed a mysterious curse on you! 🪄",
                 "icon": "💀"
             }
         ]
@@ -453,7 +469,6 @@ elif page == "🍬 Trick or Treat Roulette":
 
         st.session_state.last_candy_result = result
 
-        # Easter Egg #3
         if st.session_state.draw_count >= 5:
             st.session_state.egg_candy = True
 
@@ -462,12 +477,15 @@ elif page == "🍬 Trick or Treat Roulette":
         result = st.session_state.last_candy_result
 
         if result["type"] == "Treat":
+
             st.success(
                 f"{result['icon']} {result['text']}"
             )
+
             st.snow()
 
         else:
+
             st.error(
                 f"{result['icon']} {result['text']}"
             )
@@ -494,7 +512,7 @@ elif page == "🔮 Monster Mash Soundboard":
 
     st.write(
         "Turn up your speakers and click a button "
-        "to hear pure creature effects!"
+        "to hear spooky creature sounds!"
     )
 
     c1, c2, c3 = st.columns(3)
@@ -536,23 +554,24 @@ elif page == "🔮 Monster Mash Soundboard":
             )
 
 # ============================================================
-# SECRET PAGE 5: THE GHOST DIMENSION
+# PAGE 5: THE GHOST DIMENSION
 # ============================================================
 
 elif page == "🌌 The Ghost Dimension":
 
     if st.session_state.ghost_dimension_unlocked:
 
-        st.header("🌌 Room Unlocked: The Ghost Dimension")
+        st.header("🌌 Welcome to the Ghost Dimension")
 
         st.balloons()
 
         st.write("""
         **Congratulations, Ultimate Mansion Explorer!**
 
-        You have broken through the code layout logic.
+        You have discovered a secret passage leading
+        to a mysterious world filled with ghosts.
 
-        The floating ghost welcomes you to the infinite digital ether.
+        The floating spirits welcome you to their dimension.
         """)
 
         st.markdown(
@@ -580,7 +599,7 @@ elif page == "🌌 The Ghost Dimension":
                 )
 
                 st.success(
-                    "The Grand Phantom has recognized your achievement! 🏆"
+                    "The Grand Phantom has recognized your bravery! 🏆"
                 )
 
                 st.balloons()
@@ -602,7 +621,7 @@ elif page == "🌌 The Ghost Dimension":
         st.error("This dimension is still locked!")
 
 # ============================================================
-# SECRET GAME 6: PHANTOM QUEST
+# GAME 6: PHANTOM QUEST
 # ============================================================
 
 elif page == "👻 Phantom Quest":
@@ -710,7 +729,7 @@ elif page == "👻 Phantom Quest":
             )
 
 # ============================================================
-# SECRET GAME 7: THE HAUNTED GRAVEYARD
+# GAME 7: THE HAUNTED GRAVEYARD
 # ============================================================
 
 elif page == "🎃 The Haunted Graveyard":
@@ -720,7 +739,7 @@ elif page == "🎃 The Haunted Graveyard":
         st.header("🎃 The Haunted Graveyard")
 
         st.write("""
-        You escaped the mansion, but your adventure is not over.
+        You escaped the mansion, but your adventure is not over!
 
         The Grand Phantom has transported you to an ancient graveyard.
 
@@ -758,8 +777,8 @@ elif page == "🎃 The Haunted Graveyard":
             st.markdown(
                 "<div class='spooky-box'>"
                 "<h2>👑 Halloween Champion</h2>"
-                "<p>You conquered the mansion, "
-                "escaped the Phantom, and solved the graveyard mysteries!</p>"
+                "<p>You conquered the mansion, escaped the Phantom, "
+                "and solved the graveyard mysteries!</p>"
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -796,9 +815,7 @@ elif page == "🎃 The Haunted Graveyard":
                 key=f"graveyard_riddle_{current_round}"
             ):
 
-                answer = st.text_input(
-                    "Your answer:"
-                )
+                answer = st.text_input("Your answer:")
 
                 submitted = st.form_submit_button(
                     "🔮 Submit Answer"
