@@ -19,6 +19,11 @@ DEFAULTS = {
     "egg_candy": False,
     "draw_count": 0,
     "ghost_dimension_unlocked": False,
+    "quest_round": 1,
+    "quest_score": 0,
+    "quest_over": False,
+    "quest_safe_door": None,
+    "quest_message": "",
 }
 
 for key, value in DEFAULTS.items():
@@ -106,10 +111,7 @@ all_eggs_found = (
     and st.session_state.egg_candy
 )
 
-st.markdown(
-    '<div class="ghost">👻</div>',
-    unsafe_allow_html=True,
-)
+st.markdown('<div class="ghost">👻</div>', unsafe_allow_html=True)
 
 if all_eggs_found and not st.session_state.ghost_dimension_unlocked:
     if st.button(
@@ -133,7 +135,6 @@ if not all_eggs_found:
         st.session_state.egg_story,
         st.session_state.egg_candy,
     ])
-
     st.caption(f"🤫 Secrets discovered: {discovered} / 3")
 
 elif not st.session_state.ghost_dimension_unlocked:
@@ -152,6 +153,7 @@ menu_options = [
 
 if st.session_state.ghost_dimension_unlocked:
     menu_options.append("🌌 The Ghost Dimension")
+    menu_options.append("👑 Phantom Quest: Escape the Mansion")
 
 page = st.sidebar.selectbox(
     "Choose Your Activity:",
@@ -169,7 +171,6 @@ if page == "🚪 Front Porch":
         <div style="font-size:100px;text-align:center;">
             🏚️ 🌕 🦇
         </div>
-
         <div style="text-align:center;font-size:20px;">
             The fog rolls in... and something is moving behind the windows.
         </div>
@@ -205,7 +206,6 @@ if page == "🚪 Front Porch":
             "A disembodied voice whispers: "
             "'Who dares disturb the mansion?!'"
         )
-
         st.balloons()
 
 
@@ -213,10 +213,7 @@ if page == "🚪 Front Porch":
 elif page == "📖 Spooky Story Generator":
 
     st.header("📜 Create Your Own Spooky Tale")
-
-    st.write(
-        "Fill in the blanks to conjure a custom Halloween story."
-    )
+    st.write("Fill in the blanks to conjure a custom Halloween story.")
 
     col1, col2 = st.columns(2)
 
@@ -225,12 +222,10 @@ elif page == "📖 Spooky Story Generator":
             "Main character's name",
             value="Brave Traveler",
         )
-
         adjective = st.text_input(
             "Spooky adjective",
             value="slimy",
         )
-
         creature = st.text_input(
             "Monster or creature",
             value="Shadow Beast",
@@ -241,12 +236,10 @@ elif page == "📖 Spooky Story Generator":
             "Creepy place",
             value="The Graveyard",
         )
-
         object_held = st.text_input(
             "An object",
             value="Flashlight",
         )
-
         exclamation = st.text_input(
             "Scared exclamation",
             value="Help me!",
@@ -331,7 +324,6 @@ elif page == "🍬 Trick or Treat Roulette":
         if kind == "Treat":
             st.success(f"{icon} {result}")
             st.snow()
-
         else:
             st.error(f"{icon} {result}")
 
@@ -344,7 +336,7 @@ elif page == "🍬 Trick or Treat Roulette":
         )
 
 
-# -------------------- PAGE 4: MONSTER SOUNDBOARD --------------------
+# -------------------- PAGE 4: MONSTER MASH SOUNDBOARD --------------------
 elif page == "🔮 Monster Mash Soundboard":
 
     st.header("🎵 The Monster Mash Soundboard")
@@ -358,7 +350,6 @@ elif page == "🔮 Monster Mash Soundboard":
     with c1:
         if st.button("🐺 Werewolf", use_container_width=True):
             st.write("🐺 *AWOOOOOOOOO!*")
-
             speak_like_a_monster(
                 "Ah-wwooooo! Ow-ow-ow-wwoooo! Grrrr.",
                 0.2,
@@ -368,7 +359,6 @@ elif page == "🔮 Monster Mash Soundboard":
     with c2:
         if st.button("🧛 Vampire", use_container_width=True):
             st.write("🧛 *Mwahahahahaha!*")
-
             speak_like_a_monster(
                 "Mwahahahahaha! Ahahahaha!",
                 0.5,
@@ -378,7 +368,6 @@ elif page == "🔮 Monster Mash Soundboard":
     with c3:
         if st.button("🧟 Zombie", use_container_width=True):
             st.write("🧟 *Braaaaains...*")
-
             speak_like_a_monster(
                 "Uuuuuurrrrgh. Grrrrroaaaannn. Hhhhungggerrr.",
                 0.1,
@@ -430,6 +419,132 @@ elif page == "🌌 The Ghost Dimension":
         st.warning(
             "This room is still locked. Find all three Easter eggs first."
         )
+
+
+# -------------------- PAGE 6: PHANTOM QUEST --------------------
+elif page == "👑 Phantom Quest: Escape the Mansion":
+
+    st.header("👑 Phantom Quest: Escape the Mansion")
+
+    st.write(
+        "The Grand Phantom has opened one final challenge. "
+        "Choose the safe door in each room and escape the mansion!"
+    )
+
+    st.markdown(
+        '<div style="font-size:75px;text-align:center;">'
+        '🚪 🕯️ 👻 🚪'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    if (
+        st.session_state.quest_safe_door is None
+        and not st.session_state.quest_over
+    ):
+        st.session_state.quest_safe_door = random.choice(
+            ["Left", "Middle", "Right"]
+        )
+
+    st.progress(min(st.session_state.quest_round - 1, 3) / 3)
+
+    st.write(
+        f"**Room {min(st.session_state.quest_round, 3)} of 3**"
+    )
+
+    st.write(
+        f"**Phantom points:** {st.session_state.quest_score}"
+    )
+
+    if st.session_state.quest_over:
+
+        if st.session_state.quest_score == 3:
+            st.success(
+                "🏆 Perfect escape! You outsmarted the Grand Phantom!"
+            )
+            st.balloons()
+
+        else:
+            st.success(
+                f"You escaped the mansion with "
+                f"{st.session_state.quest_score} out of 3 phantom points!"
+            )
+
+        if st.button("🔁 Play Phantom Quest Again"):
+
+            st.session_state.quest_round = 1
+            st.session_state.quest_score = 0
+            st.session_state.quest_over = False
+
+            st.session_state.quest_safe_door = random.choice(
+                ["Left", "Middle", "Right"]
+            )
+
+            st.session_state.quest_message = ""
+
+            st.rerun()
+
+    else:
+
+        st.info(
+            "One door is safe. The other two are haunted. Choose wisely!"
+        )
+
+        door_cols = st.columns(3)
+
+        doors = ["Left", "Middle", "Right"]
+
+        door_emojis = [
+            "🚪 Left Door",
+            "🚪 Middle Door",
+            "🚪 Right Door",
+        ]
+
+        for col, door, label in zip(
+            door_cols,
+            doors,
+            door_emojis,
+        ):
+
+            with col:
+
+                if st.button(
+                    label,
+                    key=f"quest_{st.session_state.quest_round}_{door}",
+                    use_container_width=True,
+                ):
+
+                    if door == st.session_state.quest_safe_door:
+
+                        st.session_state.quest_score += 1
+
+                        st.session_state.quest_message = (
+                            f"✨ Correct! The {door.lower()} door was safe. "
+                            "The ghost lets you pass!"
+                        )
+
+                    else:
+
+                        st.session_state.quest_message = (
+                            f"👻 Oh no! The {door.lower()} door was haunted. "
+                            f"The safe door was "
+                            f"{st.session_state.quest_safe_door.lower()}."
+                        )
+
+                    st.session_state.quest_round += 1
+
+                    if st.session_state.quest_round > 3:
+                        st.session_state.quest_over = True
+
+                    else:
+                        st.session_state.quest_safe_door = random.choice(
+                            ["Left", "Middle", "Right"]
+                        )
+
+                    st.rerun()
+
+        if st.session_state.quest_message:
+            st.warning(st.session_state.quest_message)
 
 
 # -------------------- FOOTER --------------------
