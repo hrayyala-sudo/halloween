@@ -3,6 +3,7 @@ import random
 import time
 from gtts import gTTS
 import io
+from pydub import AudioSegment
 
 # --- PAGE CONFIG & THEME ---
 st.set_page_config(
@@ -60,13 +61,40 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Helper function to generate clean server-side TTS audio streams
-def spoken_spooky_sound(text):
+# Helper function to generate modified, monstrous audio effects
+def play_monster_voice(text, monster_type):
+    # 1. Generate base voice
     tts = gTTS(text=text, lang='en', tld='co.uk')
     fp = io.BytesIO()
     tts.write_to_fp(fp)
     fp.seek(0)
-    st.audio(fp, format="audio/mp3", autoplay=True)
+    
+    # 2. Load into pydub for audio manipulation
+    sound = AudioSegment.from_file(fp, format="mp3")
+    
+    if monster_type == "werewolf":
+        # Slow down and drop pitch significantly for a deep, monstrous howl/growl
+        new_sample_rate = int(sound.frame_rate * 0.55)
+        sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
+        sound = sound.speedup(playback_speed=1.2) # Normalize pacing but keep deep tone
+        
+    elif monster_type == "vampire":
+        # Deepen the voice slightly and make it ominous
+        new_sample_rate = int(sound.frame_rate * 0.75)
+        sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
+        
+    elif monster_type == "zombie":
+        # Make the zombie drag out its words super slowly
+        new_sample_rate = int(sound.frame_rate * 0.60)
+        sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
+        sound = sound.slowdown(playback_speed=0.8)
+
+    # 3. Export back to streamable bytes
+    out_fp = io.BytesIO()
+    sound.export(out_fp, format="mp3")
+    out_fp.seek(0)
+    
+    st.audio(out_fp, format="audio/mp3", autoplay=True)
 
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
@@ -89,12 +117,11 @@ if page == "🚪 Front Porch":
     What secrets lie within these digital walls? Use the sidebar menu to explore the haunted rooms!
     """)
     
-    # Quick interaction
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
             time.sleep(1)
         st.error("A disembodied voice whispers: *'Who dares disturb the Streamlit code?!'*")
-        st.balloons() # Spooky balloons!
+        st.balloons()
 
 # --- PAGE 2: SPOOKY STORY GENERATOR ---
 elif page == "📖 Spooky Story Generator":
@@ -137,7 +164,6 @@ elif page == "🍬 Trick or Treat Roulette":
         ]
         
         result = random.choice(outcomes)
-        
         if result["type"] == "Treat":
             st.success(f"{result['icon']} {result['text']}")
             st.snow()
@@ -153,16 +179,16 @@ elif page == "🔮 Monster Mash Soundboard":
     
     with c1:
         if st.button("🐺 Werewolf"):
-            st.write("🐺 *Awooooo!*")
-            spoken_spooky_sound("Awoooooooo! The werewolf howls under the full moon!")
+            st.write("🐺 *AWOOOOOOOOO!*")
+            play_monster_voice("Awoooooooo! Owowowowooo!", "werewolf")
     with c2:
         if st.button("🧛 Vampire"):
-            st.write("🧛 *Mwahahaha!*")
-            spoken_spooky_sound("Mwahahahahaha! I want to review your code!")
+            st.write("🧛 *I vant to drink your code!*")
+            play_monster_voice("Bleh! Mwahahahahaha! I vant to drink your code!", "vampire")
     with c3:
         if st.button("🧟 Zombie"):
-            st.write("🧟 *Brains...*")
-            spoken_spooky_sound("Braaaaaains! Give me clean data and brains!")
+            st.write("🧟 *Braaaaains...*")
+            play_monster_voice("Braaaaains! Give me clean data and braaaaains!", "zombie")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
