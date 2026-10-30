@@ -1,6 +1,8 @@
 import streamlit as st
 import random
 import time
+import base64
+import requests
 
 # --- PAGE CONFIG & THEME ---
 st.set_page_config(
@@ -57,6 +59,17 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Helper function to convert audio URL into unblockable Base64 data strings
+@st.cache_data(show_spinner=False)
+def get_audio_base64(url):
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            return base64.b64encode(response.content).decode()
+    except Exception:
+        pass
+    return None
 
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
@@ -137,16 +150,30 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Click the play buttons on the media players below to sound off the scares!")
+    st.write("The players are now fully unlocked! Click play to listen to your scares.")
     
+    # Download and securely embed the sounds natively into the frame
+    wolf_data = get_audio_base64("https://google.com")
+    door_data = get_audio_base64("https://google.com")
+    thunder_data = get_audio_base64("https://google.com")
+
     st.markdown("### 🐺 Creepy Wolf Howl")
-    st.audio("https://google.com", format="audio/ogg")
+    if wolf_data:
+        st.audio(f"data:audio/ogg;base64,{wolf_data}", format="audio/ogg")
+    else:
+        st.warning("Failed to load Wolf audio stream.")
     
     st.markdown("### 👻 Haunted Mansion Creak")
-    st.audio("https://google.com", format="audio/ogg")
-    
+    if door_data:
+        st.audio(f"data:audio/ogg;base64,{door_data}", format="audio/ogg")
+    else:
+        st.warning("Failed to load Creak audio stream.")
+        
     st.markdown("### ⚡ Thunder Storm")
-    st.audio("https://google.com", format="audio/ogg")
+    if thunder_data:
+        st.audio(f"data:audio/ogg;base64,{thunder_data}", format="audio/ogg")
+    else:
+        st.warning("Failed to load Thunder audio stream.")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
