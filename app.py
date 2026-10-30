@@ -99,7 +99,7 @@ if page == "🚪 Front Porch":
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
             time.sleep(1)
-        st.error("A disembodied voice whispers: *'Who dares disturb the Streamlit code?!'*")
+        st.error("A disembodied voice whispers: *'Who dares disturb the mansion?!'*")
         st.balloons()
 
 # --- PAGE 2: SPOOKY STORY GENERATOR ---
@@ -109,22 +109,21 @@ elif page == "📖 Spooky Story Generator":
     
     col1, col2 = st.columns(2)
     with col1:
-        protagonist = st.text_input("Main Character's Name", value="Professor Code")
+        protagonist = st.text_input("Main Character's Name", value="Brave Traveler")
         adjective = st.text_input("Spooky Adjective", value="slimy")
-        creature = st.text_input("Monster/Creature", value="Python Bug")
+        creature = st.text_input("Monster/Creature", value="Shadow Beast")
     with col2:
-        place = st.text_input("Creepy Place", value="The Server Room")
-        object_held = st.text_input("An Object", value="Keyboard")
-        exclamation = st.text_input("Scared Exclamation", value="Syntax Error!")
+        place = st.text_input("Creepy Place", value="The Graveyard")
+        object_held = st.text_input("An Object", value="Flashlight")
+        exclamation = st.text_input("Scared Exclamation", value="Help me!")
 
     if st.button("🔮 Conjure Story"):
         story = f"""
         It was a dark and stormy night at **{place}**. **{protagonist}** was minding their own business 
-        when suddenly, a **{adjective}** **{creature}** burst through the wall! 
+        when suddenly, a **{adjective}** **{creature}** burst through the shadows! 
         
         **{protagonist}** gasped, dropping their **{object_held}** and screaming, "**{exclamation}**!" 
-        But it was too late. The **{creature}** didn't want to eat them—it just wanted to review their code. 
-        They lived happily (and bug-free) ever after. The End.
+        They turned and ran as fast as they could back to safety. The End.
         """
         st.info(story)
 
@@ -139,7 +138,7 @@ elif page == "🍬 Trick or Treat Roulette":
             {"type": "Treat", "text": "Sour Patch Kids that actually taste like green apples! 🍏", "icon": "🍭"},
             {"type": "Trick", "text": "A spider crawls out of the bowl! 🕷️ Run!", "icon": "😱"},
             {"type": "Trick", "text": "You got a dental floss and a bruised apple. 🍏 BOOO!", "icon": "😒"},
-            {"type": "Trick", "text": "Your CSS has been cursed! Everything is upside down (metaphorically). 🪄", "icon": "🔮"},
+            {"type": "Trick", "text": "Your path has been cursed! Everything is upside down (metaphorically). 🪄", "icon": "🔮"},
         ]
         
         result = random.choice(outcomes)
@@ -152,25 +151,22 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Turn up your speakers and click a button to hear the creepy browser-altered monster voices!")
+    st.write("Turn up your speakers and click a button to hear the creepy monster voices!")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         if st.button("🐺 Werewolf"):
             st.write("🐺 *AWOOOOOOOOO!*")
-            # Deep pitch (0.3) and normal speed (1.0)
-            speak_like_a_monster("Awoooooooo! Owowowowooo!", 0.3, 1.0)
+            speak_like_a_monster("Awoooooooo! Owowowowooo! Grrrr.", 0.2, 0.8)
     with c2:
         if st.button("🧛 Vampire"):
-            st.write("🧛 *I vant to drink your code!*")
-            # Clear ominous tone (0.6) and structured spacing (0.95)
-            speak_like_a_monster("Bleh! Mwahahahahaha! I vant to drink your code!", 0.6, 0.95)
+            st.write("🧛 *Mwahahahahaha!*")
+            speak_like_a_monster("Mwahahahahaha! Welcome to my lair! Bleh!", 0.5, 0.9)
     with c3:
         if st.button("🧟 Zombie"):
             st.write("🧟 *Braaaaains...*")
-            # Super low pitch (0.1) and dragging speed (0.6) for a slow monster drawl
-            speak_like_a_monster("Braaaaains! Give me clean data and braaaaains!", 0.1, 0.6)
+            speak_like_a_monster("Braaaaains. Groooaan. Hunger.", 0.1, 0.5)
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
