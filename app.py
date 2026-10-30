@@ -156,4 +156,3 @@ elif page == "🔮 Monster Mash Soundboard":
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
-v
