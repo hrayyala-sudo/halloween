@@ -137,16 +137,14 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Click the play buttons on the media players below to listen to cinematic quality sounds!")
+    st.write("Click the play buttons on the lightweight clips below to trigger instant, stable sound effects!")
     
-    st.markdown("### 🐺 Cinematic Werewolf Howl")
-    st.audio("https://soundhelix.com", start_time=12) # High fidelity test stream
+    # Using ultra-short, light, standard public testing sound snippets that buffer instantly
+    st.markdown("### 🐺 Werewolf Howl Clip")
+    st.audio("https://mozilla.net") 
     
-    st.markdown("### 🧙 Creepy Witch Cackle")
-    st.audio("https://soundhelix.com", start_time=45) 
-    
-    st.markdown("### ⚡ Thunder Claps")
-    st.audio("https://soundhelix.com", start_time=5)
+    st.markdown("### ⚡ Short Thunder Shock")
+    st.audio("https://w3schools.com") 
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
