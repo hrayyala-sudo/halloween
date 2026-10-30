@@ -137,19 +137,23 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Click a button to wake up the residents of the mansion.")
+    st.write("Turn up your speakers and click a button to wake up the residents of the mansion.")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         if st.button("🐺 Werewolf"):
             st.markdown("### *AWOOOOOOOOO!* 🌕")
+            st.audio("https://soundboard.com", format="audio/mp3", autoplay=True)
     with c2:
         if st.button("🧛 Vampire"):
             st.markdown("### *I vant to drink your code!* 🩸")
+            st.audio("https://soundboard.com", format="audio/mp3", autoplay=True)
     with c3:
         if st.button("🧟 Zombie"):
             st.markdown("### *Braaaaains... and dataaaa...* 🧠")
+            st.audio("https://soundboard.com", format="audio/mp3", autoplay=True)
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
+v
