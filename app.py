@@ -61,12 +61,12 @@ st.markdown("""
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
-st.write("Welcome, brave traveler... Enter at your own risk. Turn up your imagination and choose your fate below.")
+st.write("Welcome, brave traveler... Enter at your own risk. Choose your fate using the sidebar menu.")
 
 st.divider()
 
 # --- SIDEBAR / NAVIGATION ---
-page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Soundboard"])
+page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Crystal Ball & Spells"])
 
 # --- PAGE 1: FRONT PORCH ---
 if page == "🚪 Front Porch":
@@ -134,17 +134,32 @@ elif page == "🍬 Trick or Treat Roulette":
         else:
             st.error(f"{result['icon']} {result['text']}")
 
-# --- PAGE 4: MONSTER MASH SOUNDBOARD ---
-elif page == "🔮 Monster Mash Soundboard":
-    st.header("🎵 The Monster Mash Board")
-    st.write("Click the play buttons on the lightweight clips below to trigger instant, stable sound effects!")
+# --- PAGE 4: CRYSTAL BALL & SPELLS (REPLACED THE BROKEN AUDIO SOUNDBOARD) ---
+elif page == "🔮 Crystal Ball & Spells":
+    st.header("🔮 The Witch's Crystal Ball")
+    st.write("Peer into the mystical item or select a spell ingredient below to unlock text incantations!")
     
-    # Using ultra-short, light, standard public testing sound snippets that buffer instantly
-    st.markdown("### 🐺 Werewolf Howl Clip")
-    st.audio("https://mozilla.net") 
+    if st.button("🧙 Gaze into the Crystal Ball"):
+        fortunes = [
+            "A black cat will cross your path, bringing unexpected Git commits! 🐈‍⬛",
+            "Beware of midnight refactoring... code ghosts await you. 👻",
+            "You will find a legendary stash of king-sized candy bars tomorrow! 🍫",
+            "A mysterious skeleton will clean up your deprecated codebase. 💀",
+            "Your future is bright... glowing like a carved jack-o'-lantern! 🎃"
+        ]
+        st.warning(random.choice(fortunes))
+        
+    st.divider()
+    st.subheader("🧪 Brew a Digital Potion")
+    ingredient = st.selectbox("Pick your primary spell ingredient:", ["🧛 Vampire Fang", "👁️ Eye of Newt", "🕸️ Spider Silk"])
     
-    st.markdown("### ⚡ Short Thunder Shock")
-    st.audio("https://w3schools.com") 
+    if st.button("✨ Cast Incantation"):
+        if ingredient == "🧛 Vampire Fang":
+            st.code("⚡ INCANTATION: 'With fang of old and code compiled, make this web app sleek and wild!'")
+        elif ingredient == "👁️ Eye of Newt":
+            st.code("⚡ INCANTATION: 'Eye of newt and server stack, fix the bugs and don't look back!'")
+        else:
+            st.code("⚡ INCANTATION: 'Spider silk and nested loop, pull data into a spooky soup!'")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
