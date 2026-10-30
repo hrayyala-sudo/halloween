@@ -64,10 +64,10 @@ def speak_like_a_monster(text, pitch, rate):
     <script>
     (function() {{
         if ('speechSynthesis' in window) {{
-            window.speechSynthesis.cancel(); // Stop any overlapping voices
+            window.speechSynthesis.cancel(); 
             var msg = new SpeechSynthesisUtterance("{text}");
-            msg.pitch = {pitch}; // Deepness (0 to 2)
-            msg.rate = {rate};   // Speed (0.1 to 10)
+            msg.pitch = {pitch}; 
+            msg.rate = {rate};   
             window.speechSynthesis.speak(msg);
         }}
     }})();
@@ -96,6 +96,12 @@ if page == "🚪 Front Porch":
     What secrets lie within these digital walls? Use the sidebar menu to explore the haunted rooms!
     """)
     
+    # Easter Egg #1 input field box
+    secret_knock = st.text_input("Psst... do you know the secret pass-phrase?", placeholder="Type here...")
+    if secret_knock.lower() == "neon mint":
+        st.success("🌟 EASTER EGG UNLOCKED: The walls glow bright in green (#05f7bf)!")
+        st.snow()
+    
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
             time.sleep(1)
@@ -105,7 +111,7 @@ if page == "🚪 Front Porch":
 # --- PAGE 2: SPOOKY STORY GENERATOR ---
 elif page == "📖 Spooky Story Generator":
     st.header("📜 Create Your Own Spooky Tale")
-    st.write("Fill out the blanks to conjure a custom terrifying (or hilarious) Halloween story.")
+    st.write("Fill out the blanks to conjure a custom terrifying Halloween story.")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -116,6 +122,10 @@ elif page == "📖 Spooky Story Generator":
         place = st.text_input("Creepy Place", value="The Graveyard")
         object_held = st.text_input("An Object", value="Flashlight")
         exclamation = st.text_input("Scared Exclamation", value="Help me!")
+
+    # Easter Egg #2 trigger within inputs
+    if protagonist.lower() == "goofy gang":
+        st.warning("👾 EASTER EGG UNLOCKED: Welcome to the official Goofy Gang sanctuary portal! 🚀")
 
     if st.button("🔮 Conjure Story"):
         story = f"""
@@ -132,12 +142,22 @@ elif page == "🍬 Trick or Treat Roulette":
     st.header("🍬 Trick or Treat Roulette")
     st.write("Reach into the digital candy bowl. Will you get a delicious treat or a devious trick?")
     
+    # Custom interaction counters for an ongoing tracking egg
+    if "draw_count" not in st.session_state:
+        st.session_state.draw_count = 0
+
     if st.button("🎃 Draw from the Bowl 🍬"):
+        st.session_state.draw_count += 1
+        
+        # Easter Egg #3: Trigger exactly on the 5th draw
+        if st.session_state.draw_count == 5:
+            st.warning("👀 EASTER EGG UNLOCKED: You found the hidden golden skull token down at the bottom of the bowl! 💀")
+            
         outcomes = [
             {"type": "Treat", "text": "You got a King-Sized Peanut Butter Cup! 🍫 (+100 Spooky Points)", "icon": "🎉"},
             {"type": "Treat", "text": "Sour Patch Kids that actually taste like green apples! 🍏", "icon": "🍭"},
             {"type": "Trick", "text": "A spider crawls out of the bowl! 🕷️ Run!", "icon": "😱"},
-            {"type": "Trick", "text": "You got a dental floss and a bruised apple. 🍏 BOOO!", "icon": "😒"},
+            {"type": "Trick", "text": "You got dental floss and a bruised apple. 🍏 BOOO!", "icon": "😒"},
             {"type": "Trick", "text": "Your path has been cursed! Everything is upside down (metaphorically). 🪄", "icon": "🔮"},
         ]
         
@@ -151,22 +171,23 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Turn up your speakers and click a button to hear the creepy monster voices!")
+    st.write("Turn up your speakers to 100% volume and click a button to hear the pure cinematic vocal creature effects!")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         if st.button("🐺 Werewolf"):
             st.write("🐺 *AWOOOOOOOOO!*")
-            speak_like_a_monster("Awoooooooo! Owowowowooo! Grrrr.", 0.2, 0.8)
+            # Uses vowel manipulation for real vocalizations instead of talking words
+            speak_like_a_monster("Ah-wwooooo! Ow-ow-ow-wwoooo! Grrrr.", 0.2, 0.7)
     with c2:
         if st.button("🧛 Vampire"):
             st.write("🧛 *Mwahahahahaha!*")
-            speak_like_a_monster("Mwahahahahaha! Welcome to my lair! Bleh!", 0.5, 0.9)
+            speak_like_a_monster("Mwahahahahaha! Ahahahaha!", 0.5, 0.85)
     with c3:
         if st.button("🧟 Zombie"):
             st.write("🧟 *Braaaaains...*")
-            speak_like_a_monster("Braaaaains. Groooaan. Hunger.", 0.1, 0.5)
+            speak_like_a_monster("Uuuuuurrrrgh. Grrrrroaaaannn. Hhhhungggerrr.", 0.1, 0.4)
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
