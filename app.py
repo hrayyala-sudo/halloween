@@ -1,9 +1,6 @@
 import streamlit as st
 import random
 import time
-import base64
-import math
-import struct
 
 # --- PAGE CONFIG & THEME ---
 st.set_page_config(
@@ -61,52 +58,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 100% Reliable Offline Sound Generator (Generates clean synth audio mathematically)
-def generate_halloween_synth(sound_type):
-    sample_rate = 8000
-    duration_ms = 1200
-    num_samples = int(sample_rate * (duration_ms / 1000.0))
-    audio_data = bytearray()
-    
-    for i in range(num_samples):
-        t = float(i) / sample_rate
-        
-        if sound_type == "wolf":
-            # Rising and falling low-pitch howl
-            frequency = 150 + 80 * math.sin(math.pi * t / 1.2)
-            val = int(25000.0 * math.sin(2.0 * math.pi * frequency * t))
-        elif sound_type == "laugh":
-            # Bouncing spooky chopped evil laugh pulses
-            frequency = 90
-            pulse = math.sin(2.0 * math.pi * 7 * t) # Chop up the sound
-            if pulse > 0:
-                val = int(20000.0 * math.sin(2.0 * math.pi * frequency * t))
-            else:
-                val = 0
-        else:
-            # Ghostly wavering Theremin tone
-            frequency = 300 + 40 * math.sin(2.0 * math.pi * 6 * t)
-            val = int(18000.0 * math.sin(2.0 * math.pi * frequency * t))
-            
-        audio_data.extend(struct.pack('<h', val))
-        
-    # Build standard system-ready RIFF/WAVE header wrapper
-    header = bytearray()
-    header.extend(b'RIFF')
-    header.extend(struct.pack('<I', 36 + len(audio_data)))
-    header.extend(b'WAVEfmt ')
-    header.extend(struct.pack('<I', 16))
-    header.extend(struct.pack('<H', 1))  # PCM Format
-    header.extend(struct.pack('<H', 1))  # Mono
-    header.extend(struct.pack('<I', sample_rate))
-    header.extend(struct.pack('<I', sample_rate * 2))
-    header.extend(struct.pack('<H', 2))
-    header.extend(struct.pack('<H', 16)) # 16-bit precision
-    header.extend(b'data')
-    header.extend(struct.pack('<I', len(audio_data)))
-    
-    return base64.b64encode(header + audio_data).decode('utf-8')
-
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
@@ -128,11 +79,12 @@ if page == "🚪 Front Porch":
     What secrets lie within these digital walls? Use the sidebar menu to explore the haunted rooms!
     """)
     
+    # Quick interaction
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
             time.sleep(1)
         st.error("A disembodied voice whispers: *'Who dares disturb the Streamlit code?!'*")
-        st.balloons()
+        st.balloons() # Spooky balloons!
 
 # --- PAGE 2: SPOOKY STORY GENERATOR ---
 elif page == "📖 Spooky Story Generator":
@@ -175,6 +127,7 @@ elif page == "🍬 Trick or Treat Roulette":
         ]
         
         result = random.choice(outcomes)
+        
         if result["type"] == "Treat":
             st.success(f"{result['icon']} {result['text']}")
             st.snow()
@@ -184,21 +137,16 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("No internet needed. These sounds are generated dynamically by your Python code server!")
+    st.write("Click the play buttons on the media players below to listen to cinematic quality sounds!")
     
-    # Generate local data structures instantly
-    wolf_wav = generate_halloween_synth("wolf")
-    laugh_wav = generate_halloween_synth("laugh")
-    ghost_wav = generate_halloween_synth("ghost")
-
-    st.markdown("### 🐺 Creepy Wolf Howl Synth")
-    st.audio(f"data:audio/wav;base64,{wolf_wav}", format="audio/wav")
+    st.markdown("### 🐺 Cinematic Werewolf Howl")
+    st.audio("https://soundhelix.com", start_time=12) # High fidelity test stream
     
-    st.markdown("### 😈 Monster Laugh Synth")
-    st.audio(f"data:audio/wav;base64,{laugh_wav}", format="audio/wav")
+    st.markdown("### 🧙 Creepy Witch Cackle")
+    st.audio("https://soundhelix.com", start_time=45) 
     
-    st.markdown("### 👻 Ghost Theremin Sound")
-    st.audio(f"data:audio/wav;base64,{ghost_wav}", format="audio/wav")
+    st.markdown("### ⚡ Thunder Claps")
+    st.audio("https://soundhelix.com", start_time=5)
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
