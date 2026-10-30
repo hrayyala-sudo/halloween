@@ -1,6 +1,8 @@
 import streamlit as st
 import random
 import time
+from gtts import gTTS
+import io
 
 # --- PAGE CONFIG & THEME ---
 st.set_page_config(
@@ -58,6 +60,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Helper function to generate clean server-side TTS audio streams
+def spoken_spooky_sound(text):
+    tts = gTTS(text=text, lang='en', tld='co.uk')
+    fp = io.BytesIO()
+    tts.write_to_fp(fp)
+    fp.seek(0)
+    st.audio(fp, format="audio/mp3", autoplay=True)
+
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
@@ -66,7 +76,7 @@ st.write("Welcome, brave traveler... Enter at your own risk. Turn up your imagin
 st.divider()
 
 # --- SIDEBAR / NAVIGATION ---
-page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Action Board"])
+page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Soundboard"])
 
 # --- PAGE 1: FRONT PORCH ---
 if page == "🚪 Front Porch":
@@ -134,27 +144,25 @@ elif page == "🍬 Trick or Treat Roulette":
         else:
             st.error(f"{result['icon']} {result['text']}")
 
-# --- PAGE 4: MONSTER MASH ACTION BOARD ---
-elif page == "🔮 Monster Mash Action Board":
-    st.header("🔮 The Monster Action Board")
-    st.write("Tap a resident below to unleash their text soundscape animation effects!")
+# --- PAGE 4: MONSTER MASH SOUNDBOARD ---
+elif page == "🔮 Monster Mash Soundboard":
+    st.header("🎵 The Monster Mash Board")
+    st.write("Turn up your speakers and click a button to wake up the monsters inside the mansion.")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         if st.button("🐺 Werewolf"):
-            st.toast('AWOOOOOOOOO! 🌕', icon='🐺')
-            st.warning("### 🐺 *AWOOOOOOOOO!* \nThe full moon glimmers as a gray timber wolf screams into the cold autumn night wind.")
-            
+            st.write("🐺 *Awooooo!*")
+            spoken_spooky_sound("Awoooooooo! The werewolf howls under the full moon!")
     with c2:
         if st.button("🧛 Vampire"):
-            st.toast('MWAHAHAHAHA! 🩸', icon='🧛')
-            st.error("### 🧛 *MWAHAHAHAHA!* \nA dark silhouette swoops down from the rafters with a terrifying, deep theatrical echo.")
-            
+            st.write("🧛 *Mwahahaha!*")
+            spoken_spooky_sound("Mwahahahahaha! I want to review your code!")
     with c3:
-        if st.button("⚡ Thunder"):
-            st.toast('BOOM! 🌩️', icon='⚡')
-            st.info("### ⚡ *BOOM! CRACKLE!* \nA massive strike of purple lightning hits the server tower, vibrating the floor.")
+        if st.button("🧟 Zombie"):
+            st.write("🧟 *Brains...*")
+            spoken_spooky_sound("Braaaaaains! Give me clean data and brains!")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
