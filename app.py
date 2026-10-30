@@ -58,15 +58,49 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Unblockable Web Audio API Sound Trigger
+def trigger_browser_synth(sound_type):
+    if sound_type == "wolf":
+        freq_script = "osc.frequency.setValueAtTime(150, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.4); osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 1.2);"
+        type_script = "sawtooth"
+    elif sound_type == "laugh":
+        freq_script = "osc.frequency.setValueAtTime(80, ctx.currentTime); osc.frequency.setValueAtTime(110, ctx.currentTime + 0.15); osc.frequency.setValueAtTime(70, ctx.currentTime + 0.3); osc.frequency.setValueAtTime(100, ctx.currentTime + 0.45); osc.frequency.setValueAtTime(60, ctx.currentTime + 0.6);"
+        type_script = "square"
+    else: # ghost
+        freq_script = "osc.frequency.setValueAtTime(320, ctx.currentTime); osc.frequency.linearRampToValueAtTime(360, ctx.currentTime + 0.3); osc.frequency.linearRampToValueAtTime(280, ctx.currentTime + 0.7); osc.frequency.linearRampToValueAtTime(340, ctx.currentTime + 1.2);"
+        type_script = "sine"
+
+    js_html = f"""
+    <script>
+    (function() {{
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        
+        osc.type = '{type_script}';
+        {freq_script}
+        
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 1.2);
+    }})();
+    </script>
+    """
+    st.components.v1.html(js_html, height=0)
+
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
-st.write("Welcome, brave traveler... Enter at your own risk. Choose your fate using the sidebar menu.")
+st.write("Welcome, brave traveler... Enter at your own risk. Turn up your imagination and choose your fate below.")
 
 st.divider()
 
 # --- SIDEBAR / NAVIGATION ---
-page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Crystal Ball & Spells"])
+page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Soundboard"])
 
 # --- PAGE 1: FRONT PORCH ---
 if page == "🚪 Front Porch":
@@ -79,12 +113,11 @@ if page == "🚪 Front Porch":
     What secrets lie within these digital walls? Use the sidebar menu to explore the haunted rooms!
     """)
     
-    # Quick interaction
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
             time.sleep(1)
         st.error("A disembodied voice whispers: *'Who dares disturb the Streamlit code?!'*")
-        st.balloons() # Spooky balloons!
+        st.balloons()
 
 # --- PAGE 2: SPOOKY STORY GENERATOR ---
 elif page == "📖 Spooky Story Generator":
@@ -127,39 +160,31 @@ elif page == "🍬 Trick or Treat Roulette":
         ]
         
         result = random.choice(outcomes)
-        
         if result["type"] == "Treat":
             st.success(f"{result['icon']} {result['text']}")
             st.snow()
         else:
             st.error(f"{result['icon']} {result['text']}")
 
-# --- PAGE 4: CRYSTAL BALL & SPELLS (REPLACED THE BROKEN AUDIO SOUNDBOARD) ---
-elif page == "🔮 Crystal Ball & Spells":
-    st.header("🔮 The Witch's Crystal Ball")
-    st.write("Peer into the mystical item or select a spell ingredient below to unlock text incantations!")
+# --- PAGE 4: MONSTER MASH SOUNDBOARD ---
+elif page == "🔮 Monster Mash Soundboard":
+    st.header("🎵 The Monster Mash Board")
+    st.write("Tap a button below to hear browser-synthesized retro effects instantly!")
     
-    if st.button("🧙 Gaze into the Crystal Ball"):
-        fortunes = [
-            "A black cat will cross your path, bringing unexpected Git commits! 🐈‍⬛",
-            "Beware of midnight refactoring... code ghosts await you. 👻",
-            "You will find a legendary stash of king-sized candy bars tomorrow! 🍫",
-            "A mysterious skeleton will clean up your deprecated codebase. 💀",
-            "Your future is bright... glowing like a carved jack-o'-lantern! 🎃"
-        ]
-        st.warning(random.choice(fortunes))
-        
-    st.divider()
-    st.subheader("🧪 Brew a Digital Potion")
-    ingredient = st.selectbox("Pick your primary spell ingredient:", ["🧛 Vampire Fang", "👁️ Eye of Newt", "🕸️ Spider Silk"])
+    c1, c2, c3 = st.columns(3)
     
-    if st.button("✨ Cast Incantation"):
-        if ingredient == "🧛 Vampire Fang":
-            st.code("⚡ INCANTATION: 'With fang of old and code compiled, make this web app sleek and wild!'")
-        elif ingredient == "👁️ Eye of Newt":
-            st.code("⚡ INCANTATION: 'Eye of newt and server stack, fix the bugs and don't look back!'")
-        else:
-            st.code("⚡ INCANTATION: 'Spider silk and nested loop, pull data into a spooky soup!'")
+    with c1:
+        if st.button("🐺 Werewolf Howl"):
+            st.markdown("### *AWOOOOOOOOO!* 🌕")
+            trigger_browser_synth("wolf")
+    with c2:
+        if st.button("😈 Evil Laugh"):
+            st.markdown("### *MWAHAHAHAHA!* 🧛")
+            trigger_browser_synth("laugh")
+    with c3:
+        if st.button("👻 Ghost Theremin"):
+            st.markdown("### *BOOOOOOOO!* 🧠")
+            trigger_browser_synth("ghost")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
