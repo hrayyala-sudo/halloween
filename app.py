@@ -58,6 +58,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Spooky HTML Injector Helper Function for instant browser playback
+def play_spooky_sound(url):
+    sound_html = f"""
+        <iframe src="{url}" allow="autoplay" style="display:none" id="iframeAudio"></iframe>
+        <audio autoplay>
+            <source src="{url}" type="audio/mp3">
+        </audio>
+    """
+    st.markdown(sound_html, unsafe_allow_html=True)
+
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
@@ -144,15 +154,15 @@ elif page == "🔮 Monster Mash Soundboard":
     with c1:
         if st.button("🐺 Werewolf"):
             st.markdown("### *AWOOOOOOOOO!* 🌕")
-            st.audio("https://soundboard.com", format="audio/mp3", autoplay=True)
+            play_spooky_sound("https://soundboard.com")
     with c2:
         if st.button("🧛 Vampire"):
             st.markdown("### *I vant to drink your code!* 🩸")
-            st.audio("https://soundboard.com", format="audio/mp3", autoplay=True)
+            play_spooky_sound("https://soundboard.com")
     with c3:
         if st.button("🧟 Zombie"):
             st.markdown("### *Braaaaains... and dataaaa...* 🧠")
-            st.audio("https://soundboard.com", format="audio/mp3", autoplay=True)
+            play_spooky_sound("https://soundboard.com")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
