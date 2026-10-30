@@ -5,6 +5,64 @@ import json
 import time
 
 # ============================================================
+# PHANTOM QUEST QUESTIONS
+# ============================================================
+
+PHANTOM_QUEST_QUESTIONS = [
+    {
+        "question": "Bats are blind.",
+        "answer": False,
+        "hint": "Bats can see, and many also use echolocation."
+    },
+    {
+        "question": "A pumpkin is a fruit.",
+        "answer": True,
+        "hint": "It grows from a flower and has seeds."
+    },
+    {
+        "question": "The Sun is a star.",
+        "answer": True,
+        "hint": "It is at the center of our solar system."
+    },
+    {
+        "question": "Spiders have six legs.",
+        "answer": False,
+        "hint": "Spiders have more legs than insects."
+    },
+    {
+        "question": "Water freezes at 0 degrees Celsius.",
+        "answer": True,
+        "hint": "Think about the temperature when ice forms."
+    },
+    {
+        "question": "Penguins are mammals.",
+        "answer": False,
+        "hint": "Penguins have feathers and lay eggs."
+    },
+    {
+        "question": "The Moon makes its own light.",
+        "answer": False,
+        "hint": "The Moon reflects light from the Sun."
+    },
+    {
+        "question": "An octopus has three hearts.",
+        "answer": True,
+        "hint": "This sea creature has more than one heart."
+    },
+    {
+        "question": "A year on Earth is about 365 days.",
+        "answer": True,
+        "hint": "It is how long Earth takes to orbit the Sun."
+    },
+    {
+        "question": "Sound can travel through empty space.",
+        "answer": False,
+        "hint": "Sound needs something to travel through."
+    }
+]
+
+
+# ============================================================
 # PAGE CONFIGURATION
 # ============================================================
 
@@ -14,6 +72,7 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded"
 )
+
 
 # ============================================================
 # SESSION STATE
@@ -28,8 +87,9 @@ defaults = {
     "phantom_summoned": False,
     "quest_round": 1,
     "quest_score": 0,
-    "quest_safe_door": random.randint(1, 3),
-    "quest_failed": False,
+    "quest_questions": random.sample(PHANTOM_QUEST_QUESTIONS, 5),
+    "quest_message": "",
+    "quest_message_type": "",
     "phantom_quest_completed": False,
     "graveyard_round": 1,
     "graveyard_score": 0,
@@ -42,6 +102,7 @@ defaults = {
 for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
+
 
 # ============================================================
 # CUSTOM HALLOWEEN THEME
@@ -106,6 +167,7 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
+
 # ============================================================
 # HELPER FUNCTIONS
 # ============================================================
@@ -137,8 +199,11 @@ def reset_phantom_quest():
 
     st.session_state.quest_round = 1
     st.session_state.quest_score = 0
-    st.session_state.quest_safe_door = random.randint(1, 3)
-    st.session_state.quest_failed = False
+    st.session_state.quest_questions = random.sample(
+        PHANTOM_QUEST_QUESTIONS, 5
+    )
+    st.session_state.quest_message = ""
+    st.session_state.quest_message_type = ""
     st.session_state.phantom_quest_completed = False
 
 
@@ -159,6 +224,7 @@ all_eggs_found = (
     and st.session_state.egg_candy
 )
 
+
 # ============================================================
 # HEADER
 # ============================================================
@@ -174,6 +240,7 @@ st.write(
     "Welcome, brave traveler... Enter at your own risk. "
     "The ghosts, witches, and monsters are waiting for you!"
 )
+
 
 # ============================================================
 # FLOATING GHOST / SECRET ROOM UNLOCK
@@ -213,6 +280,7 @@ if not all_eggs_found:
 
 st.divider()
 
+
 # ============================================================
 # SIDEBAR NAVIGATION
 # ============================================================
@@ -237,6 +305,7 @@ page = st.sidebar.selectbox(
     "Choose Your Activity:",
     menu_options
 )
+
 
 # ============================================================
 # PAGE 1: FRONT PORCH
@@ -311,6 +380,7 @@ if page == "🚪 Front Porch":
 
     if st.session_state.egg_porch:
         st.success("✅ Easter Egg #1: Discovered!")
+
 
 # ============================================================
 # PAGE 2: SPOOKY STORY GENERATOR
@@ -408,6 +478,7 @@ elif page == "📖 Spooky Story Generator":
     if st.session_state.egg_story:
         st.success("✅ Easter Egg #2: Discovered!")
 
+
 # ============================================================
 # PAGE 3: TRICK OR TREAT ROULETTE
 # ============================================================
@@ -502,6 +573,7 @@ elif page == "🍬 Trick or Treat Roulette":
         f"{max(0, 5 - st.session_state.draw_count)}"
     )
 
+
 # ============================================================
 # PAGE 4: MONSTER MASH SOUNDBOARD
 # ============================================================
@@ -552,6 +624,7 @@ elif page == "🔮 Monster Mash Soundboard":
                 0.1,
                 0.4
             )
+
 
 # ============================================================
 # PAGE 5: THE GHOST DIMENSION
@@ -620,6 +693,7 @@ elif page == "🌌 The Ghost Dimension":
 
         st.error("This dimension is still locked!")
 
+
 # ============================================================
 # GAME 6: PHANTOM QUEST
 # ============================================================
@@ -628,105 +702,196 @@ elif page == "👻 Phantom Quest":
 
     if st.session_state.phantom_summoned:
 
-        st.header("👻 Phantom Quest: Escape the Mansion")
+        st.header("👻 Phantom Quest: The Two Haunted Doors")
 
         st.write("""
-        The Grand Phantom has challenged you!
+        The Grand Phantom has trapped you inside the mansion!
 
-        You must escape through three haunted doors.
+        You will face five true-or-false questions.
 
-        One door is safe. The other two contain terrifying surprises.
+        Each question has two doors:
 
-        Choose carefully!
+        🚪 TRUE door
+        🚪 FALSE door
+
+        Choose the correct door five times in a row to escape!
+
+        Be careful! One wrong answer resets your streak back to zero!
         """)
 
         st.markdown(
             f"<div class='spooky-box'>"
-            f"<h2>Round {st.session_state.quest_round} of 3</h2>"
-            f"<h3>🏆 Score: {st.session_state.quest_score}/3</h3>"
+            f"<h2>Question {st.session_state.quest_round} of 5</h2>"
+            f"<h3>🔥 Correct Answers in a Row: "
+            f"{st.session_state.quest_score}/5</h3>"
             f"</div>",
             unsafe_allow_html=True
         )
 
-        if st.session_state.quest_failed:
+        # Display feedback from the previous answer
+        if st.session_state.quest_message:
 
-            st.error(
-                "💀 You entered the wrong door! "
-                "The ghosts have captured you!"
-            )
+            if st.session_state.quest_message_type == "success":
+                st.success(st.session_state.quest_message)
 
-            if st.button("🔄 Try Phantom Quest Again"):
+            elif st.session_state.quest_message_type == "error":
+                st.error(st.session_state.quest_message)
 
-                reset_phantom_quest()
-                st.rerun()
-
-        elif st.session_state.phantom_quest_completed:
+        # Victory screen
+        if st.session_state.phantom_quest_completed:
 
             st.success(
-                "🎉 You escaped the mansion! "
-                "You have completed Phantom Quest!"
+                "🎉 YOU ESCAPED! "
+                "You answered five questions correctly in a row!"
             )
 
             st.balloons()
 
-            st.info(
-                "🎃 A new adventure has unlocked: "
-                "The Haunted Graveyard!"
+            st.markdown(
+                "<div class='spooky-box'>"
+                "<h2>🏆 Phantom Quest Champion!</h2>"
+                "<p>You outsmarted the Grand Phantom!</p>"
+                "</div>",
+                unsafe_allow_html=True
             )
+
+            st.info(
+                "🎃 Congratulations! "
+                "The Haunted Graveyard is now unlocked!"
+            )
+
+            if st.button("🔄 Play Phantom Quest Again"):
+
+                reset_phantom_quest()
+                st.rerun()
 
         else:
 
-            st.subheader("🚪 Choose Your Door")
-
-            col1, col2, col3 = st.columns(3)
-
-            doors = [
-                (col1, 1, "🚪 Door 1"),
-                (col2, 2, "🚪 Door 2"),
-                (col3, 3, "🚪 Door 3")
+            # Get the current question
+            current_question = st.session_state.quest_questions[
+                st.session_state.quest_round - 1
             ]
 
-            for col, door_number, label in doors:
+            st.subheader("👻 The Phantom's Challenge")
 
-                with col:
+            st.markdown(
+                f"<div class='spooky-box'>"
+                f"<h2>{current_question['question']}</h2>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
 
-                    if st.button(
-                        label,
-                        key=f"quest_door_{st.session_state.quest_round}_{door_number}",
-                        use_container_width=True
-                    ):
+            # Display hint
+            st.info(
+                f"💡 Hint: {current_question['hint']}"
+            )
 
-                        if door_number == st.session_state.quest_safe_door:
+            st.write("Choose the correct door!")
 
-                            st.session_state.quest_score += 1
+            # Two doors
+            col1, col2 = st.columns(2)
 
-                            if st.session_state.quest_round >= 3:
+            with col1:
 
-                                st.session_state.phantom_quest_completed = True
+                if st.button(
+                    "🚪 TRUE",
+                    key=f"true_door_{st.session_state.quest_round}",
+                    use_container_width=True
+                ):
 
-                            else:
+                    if current_question["answer"] is True:
 
-                                st.session_state.quest_round += 1
+                        st.session_state.quest_score += 1
 
-                                st.session_state.quest_safe_door = (
-                                    random.randint(1, 3)
-                                )
+                        st.session_state.quest_message = (
+                            "✨ Correct! The TRUE door opens!"
+                        )
 
-                            st.success(
-                                "✨ You found the safe door! "
-                                "The ghosts let you pass."
-                            )
+                        st.session_state.quest_message_type = "success"
+
+                        if st.session_state.quest_score == 5:
+
+                            st.session_state.phantom_quest_completed = True
 
                         else:
 
-                            st.session_state.quest_failed = True
+                            st.session_state.quest_round += 1
 
-                        st.rerun()
+                    else:
+
+                        # Wrong answer resets the streak
+                        st.session_state.quest_score = 0
+                        st.session_state.quest_round = 1
+
+                        # Start with five new random questions
+                        st.session_state.quest_questions = random.sample(
+                            PHANTOM_QUEST_QUESTIONS, 5
+                        )
+
+                        st.session_state.quest_message = (
+                            "💀 WRONG DOOR! Your streak is back to zero. "
+                            "Try again!"
+                        )
+
+                        st.session_state.quest_message_type = "error"
+
+                    st.rerun()
+
+            with col2:
+
+                if st.button(
+                    "🚪 FALSE",
+                    key=f"false_door_{st.session_state.quest_round}",
+                    use_container_width=True
+                ):
+
+                    if current_question["answer"] is False:
+
+                        st.session_state.quest_score += 1
+
+                        st.session_state.quest_message = (
+                            "✨ Correct! The FALSE door opens!"
+                        )
+
+                        st.session_state.quest_message_type = "success"
+
+                        if st.session_state.quest_score == 5:
+
+                            st.session_state.phantom_quest_completed = True
+
+                        else:
+
+                            st.session_state.quest_round += 1
+
+                    else:
+
+                        # Wrong answer resets the streak
+                        st.session_state.quest_score = 0
+                        st.session_state.quest_round = 1
+
+                        # Start with five new random questions
+                        st.session_state.quest_questions = random.sample(
+                            PHANTOM_QUEST_QUESTIONS, 5
+                        )
+
+                        st.session_state.quest_message = (
+                            "💀 WRONG DOOR! Your streak is back to zero. "
+                            "Try again!"
+                        )
+
+                        st.session_state.quest_message_type = "error"
+
+                    st.rerun()
 
             st.caption(
-                "One door is safe. Two doors are haunted. "
-                "Choose wisely!"
+                "🚪 TRUE or FALSE? Choose wisely! "
+                "You need five correct answers in a row to escape!"
             )
+
+    else:
+
+        st.error("This dimension is still locked!")
+
 
 # ============================================================
 # GAME 7: THE HAUNTED GRAVEYARD
@@ -857,6 +1022,7 @@ elif page == "🎃 The Haunted Graveyard":
             "This adventure is locked! "
             "Complete Phantom Quest first."
         )
+
 
 # ============================================================
 # FOOTER
