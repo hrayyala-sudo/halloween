@@ -137,16 +137,16 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Click a sound element card below to play standard audio directly from the player interface.")
+    st.write("Click the play buttons on the media players below to sound off the scares!")
     
-    st.markdown("### 🐺 Werewolf Howl")
-    st.audio("https://wikimedia.org")
+    st.markdown("### 🐺 Creepy Wolf Howl")
+    st.audio("https://google.com", format="audio/ogg")
     
-    st.markdown("### 😈 Evil Laugh")
-    st.audio("https://wikimedia.org")
+    st.markdown("### 👻 Haunted Mansion Creak")
+    st.audio("https://google.com", format="audio/ogg")
     
-    st.markdown("### 👻 Ghostly Theremin")
-    st.audio("https://wikimedia.org")
+    st.markdown("### ⚡ Thunder Storm")
+    st.audio("https://google.com", format="audio/ogg")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
