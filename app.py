@@ -58,16 +58,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Spooky HTML Injector Helper Function for instant browser playback
-def play_spooky_sound(url):
-    sound_html = f"""
-        <iframe src="{url}" allow="autoplay" style="display:none" id="iframeAudio"></iframe>
-        <audio autoplay>
-            <source src="{url}" type="audio/mp3">
-        </audio>
-    """
-    st.markdown(sound_html, unsafe_allow_html=True)
-
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
@@ -147,22 +137,16 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Turn up your speakers and click a button to wake up the residents of the mansion.")
+    st.write("Click a sound element card below to play standard audio directly from the player interface.")
     
-    c1, c2, c3 = st.columns(3)
+    st.markdown("### 🐺 Werewolf Howl")
+    st.audio("https://wikimedia.org")
     
-    with c1:
-        if st.button("🐺 Werewolf"):
-            st.markdown("### *AWOOOOOOOOO!* 🌕")
-            play_spooky_sound("https://wikimedia.org")
-    with c2:
-        if st.button("😈 Evil Laugh"):
-            st.markdown("### *MWAHAHAHAHA!* 🧛")
-            play_spooky_sound("https://wikimedia.org")
-    with c3:
-        if st.button("👻 Ghost"):
-            st.markdown("### *BOOOOOOOO!* 🧠")
-            play_spooky_sound("https://wikimedia.org")
+    st.markdown("### 😈 Evil Laugh")
+    st.audio("https://wikimedia.org")
+    
+    st.markdown("### 👻 Ghostly Theremin")
+    st.audio("https://wikimedia.org")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
