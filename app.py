@@ -1,9 +1,6 @@
 import streamlit as st
 import random
 import time
-from gtts import gTTS
-import io
-from pydub import AudioSegment
 
 # --- PAGE CONFIG & THEME ---
 st.set_page_config(
@@ -61,40 +58,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Helper function to generate modified, monstrous audio effects
-def play_monster_voice(text, monster_type):
-    # 1. Generate base voice
-    tts = gTTS(text=text, lang='en', tld='co.uk')
-    fp = io.BytesIO()
-    tts.write_to_fp(fp)
-    fp.seek(0)
-    
-    # 2. Load into pydub for audio manipulation
-    sound = AudioSegment.from_file(fp, format="mp3")
-    
-    if monster_type == "werewolf":
-        # Slow down and drop pitch significantly for a deep, monstrous howl/growl
-        new_sample_rate = int(sound.frame_rate * 0.55)
-        sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
-        sound = sound.speedup(playback_speed=1.2) # Normalize pacing but keep deep tone
-        
-    elif monster_type == "vampire":
-        # Deepen the voice slightly and make it ominous
-        new_sample_rate = int(sound.frame_rate * 0.75)
-        sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
-        
-    elif monster_type == "zombie":
-        # Make the zombie drag out its words super slowly
-        new_sample_rate = int(sound.frame_rate * 0.60)
-        sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
-        sound = sound.slowdown(playback_speed=0.8)
-
-    # 3. Export back to streamable bytes
-    out_fp = io.BytesIO()
-    sound.export(out_fp, format="mp3")
-    out_fp.seek(0)
-    
-    st.audio(out_fp, format="audio/mp3", autoplay=True)
+# Unblockable Native Browser Speech Generator with Monster Voice Modifiers
+def speak_like_a_monster(text, pitch, rate):
+    js_html = f"""
+    <script>
+    (function() {{
+        if ('speechSynthesis' in window) {{
+            window.speechSynthesis.cancel(); // Stop any overlapping voices
+            var msg = new SpeechSynthesisUtterance("{text}");
+            msg.pitch = {pitch}; // Deepness (0 to 2)
+            msg.rate = {rate};   // Speed (0.1 to 10)
+            window.speechSynthesis.speak(msg);
+        }}
+    }})();
+    </script>
+    """
+    st.components.v1.html(js_html, height=0)
 
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
@@ -173,22 +152,25 @@ elif page == "🍬 Trick or Treat Roulette":
 # --- PAGE 4: MONSTER MASH SOUNDBOARD ---
 elif page == "🔮 Monster Mash Soundboard":
     st.header("🎵 The Monster Mash Board")
-    st.write("Turn up your speakers and click a button to wake up the monsters inside the mansion.")
+    st.write("Turn up your speakers and click a button to hear the creepy browser-altered monster voices!")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         if st.button("🐺 Werewolf"):
             st.write("🐺 *AWOOOOOOOOO!*")
-            play_monster_voice("Awoooooooo! Owowowowooo!", "werewolf")
+            # Deep pitch (0.3) and normal speed (1.0)
+            speak_like_a_monster("Awoooooooo! Owowowowooo!", 0.3, 1.0)
     with c2:
         if st.button("🧛 Vampire"):
             st.write("🧛 *I vant to drink your code!*")
-            play_monster_voice("Bleh! Mwahahahahaha! I vant to drink your code!", "vampire")
+            # Clear ominous tone (0.6) and structured spacing (0.95)
+            speak_like_a_monster("Bleh! Mwahahahahaha! I vant to drink your code!", 0.6, 0.95)
     with c3:
         if st.button("🧟 Zombie"):
             st.write("🧟 *Braaaaains...*")
-            play_monster_voice("Braaaaains! Give me clean data and braaaaains!", "zombie")
+            # Super low pitch (0.1) and dragging speed (0.6) for a slow monster drawl
+            speak_like_a_monster("Braaaaains! Give me clean data and braaaaains!", 0.1, 0.6)
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
