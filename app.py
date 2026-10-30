@@ -58,16 +58,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Clean, bypass-ready HTML injection for instantaneous unblocked acoustic playback
-def play_clean_acoustic_sound(url):
-    sound_html = f"""
-        <iframe src="{url}" allow="autoplay" style="display:none;" id="audioFrame"></iframe>
-        <audio autoplay style="display:none;">
-            <source src="{url}" type="audio/mp3">
-        </audio>
-    """
-    st.components.v1.html(sound_html, height=0)
-
 # --- HEADER ---
 st.markdown("<div class='ghost'>👻</div>", unsafe_allow_html=True)
 st.title("🎃 The Haunted Streamlit Mansion 💀")
@@ -76,7 +66,7 @@ st.write("Welcome, brave traveler... Enter at your own risk. Turn up your imagin
 st.divider()
 
 # --- SIDEBAR / NAVIGATION ---
-page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Soundboard"])
+page = st.sidebar.selectbox("Choose Your Activity:", ["🚪 Front Porch", "📖 Spooky Story Generator", "🍬 Trick or Treat Roulette", "🔮 Monster Mash Action Board"])
 
 # --- PAGE 1: FRONT PORCH ---
 if page == "🚪 Front Porch":
@@ -89,11 +79,12 @@ if page == "🚪 Front Porch":
     What secrets lie within these digital walls? Use the sidebar menu to explore the haunted rooms!
     """)
     
+    # Quick interaction
     if st.button("Knock on the Door 🚪"):
         with st.spinner("Creaaaaak..."):
             time.sleep(1)
         st.error("A disembodied voice whispers: *'Who dares disturb the Streamlit code?!'*")
-        st.balloons()
+        st.balloons() # Spooky balloons!
 
 # --- PAGE 2: SPOOKY STORY GENERATOR ---
 elif page == "📖 Spooky Story Generator":
@@ -136,36 +127,34 @@ elif page == "🍬 Trick or Treat Roulette":
         ]
         
         result = random.choice(outcomes)
+        
         if result["type"] == "Treat":
             st.success(f"{result['icon']} {result['text']}")
             st.snow()
         else:
             st.error(f"{result['icon']} {result['text']}")
 
-# --- PAGE 4: MONSTER MASH SOUNDBOARD ---
-elif page == "🔮 Monster Mash Soundboard":
-    st.header("🎵 The Monster Mash Board")
-    st.write("Tap a button below to unleash real, realistic sound effect soundscapes.")
+# --- PAGE 4: MONSTER MASH ACTION BOARD ---
+elif page == "🔮 Monster Mash Action Board":
+    st.header("🔮 The Monster Action Board")
+    st.write("Tap a resident below to unleash their text soundscape animation effects!")
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
-        if st.button("🐺 Werewolf Howl"):
-            st.markdown("### *AWOOOOOOOOO!* 🌕")
-            # Realistic, deep cinematic outdoor wolf howl stream
-            play_clean_acoustic_sound("https://mixkit.co")
+        if st.button("🐺 Werewolf"):
+            st.toast('AWOOOOOOOOO! 🌕', icon='🐺')
+            st.warning("### 🐺 *AWOOOOOOOOO!* \nThe full moon glimmers as a gray timber wolf screams into the cold autumn night wind.")
             
     with c2:
-        if st.button("😈 Evil Laugh"):
-            st.markdown("### *MWAHAHAHAHA!* 🧛")
-            # Clear, professional theatrical echoing villain laugh clip
-            play_clean_acoustic_sound("https://mixkit.co")
+        if st.button("🧛 Vampire"):
+            st.toast('MWAHAHAHAHA! 🩸', icon='🧛')
+            st.error("### 🧛 *MWAHAHAHAHA!* \nA dark silhouette swoops down from the rafters with a terrifying, deep theatrical echo.")
             
     with c3:
-        if st.button("⚡ Thunder Strike"):
-            st.markdown("### *BOOM! CRACKLE!* 🌩️")
-            # Immersive realistic lightning clap soundscape
-            play_clean_acoustic_sound("https://mixkit.co")
+        if st.button("⚡ Thunder"):
+            st.toast('BOOM! 🌩️', icon='⚡')
+            st.info("### ⚡ *BOOM! CRACKLE!* \nA massive strike of purple lightning hits the server tower, vibrating the floor.")
 
 # --- FOOTER ---
 st.markdown("<br><hr><center>Made with 🧡 and 🔮 by a Spooky Developer</center>", unsafe_allow_html=True)
