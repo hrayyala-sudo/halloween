@@ -2,6 +2,8 @@ import streamlit as st
 import random
 import json
 import time
+import math
+import streamlit.components.v1 as components
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -61,21 +63,13 @@ defaults = {
     "is_super_mode": False,
     "super_mode_timer": 0,
     "pm_score": 0,
-    "orbs_active": {
-        "Orb1": True,
-        "Orb2": True,
-        "Orb3": True,
-        "Orb4": True
-    },
+    "orbs_active": {"Orb1": True, "Orb2": True, "Orb3": True, "Orb4": True},
     "pm_game_over": False,
-
-    # Normal Goofy Gang Pac-Man
+    # Normal Goofy Gang Pac-Man: 5x5 candy grid and four ghosts.
     "pac_x": 2,
     "pac_y": 4,
     "pac_score": 0,
-    "pac_game_grid": [
-        ["🍬" for _ in range(5)] for _ in range(5)
-    ],
+    "pac_game_grid": [["🍬" for _ in range(5)] for _ in range(5)],
     "pac_ghosts": [
         {"x": 0, "y": 0, "color": "🔴"},
         {"x": 4, "y": 0, "color": "💖"},
@@ -84,18 +78,14 @@ defaults = {
     ],
     "pac_game_won": False,
     "pac_last_event": "",
-
-    # Tetris
-    "tetris_board": [
-        ["⬛" for _ in range(6)] for _ in range(10)
-    ],
+    "tetris_board": [["⬛" for _ in range(6)] for _ in range(10)],
     "piece_x": 2,
     "piece_y": 0,
     "tetris_score": 0,
     "active_shape": "🟦",
     "tetris_piece": None,
     "tetris_game_over": False,
-    "tetris_lines": 0
+    "tetris_lines": 0,
 }
 
 for key, value in defaults.items():
@@ -107,25 +97,17 @@ for key, value in defaults.items():
 # ============================================================
 
 TETROMINOES = [
-    [[1, 1, 1, 1]],                 # I
-    [[1, 1], [1, 1]],               # O
-    [[0, 1, 0], [1, 1, 1]],         # T
-    [[0, 1, 1], [1, 1, 0]],         # S
-    [[1, 1, 0], [0, 1, 1]],         # Z
-    [[1, 0, 0], [1, 1, 1]],         # J
-    [[0, 0, 1], [1, 1, 1]],         # L
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[0, 1, 0], [1, 1, 1]],
+    [[0, 1, 1], [1, 1, 0]],
+    [[1, 1, 0], [0, 1, 1]],
+    [[1, 0, 0], [1, 1, 1]],
+    [[0, 0, 1], [1, 1, 1]],
 ]
 
 if st.session_state.tetris_piece is None:
     st.session_state.tetris_piece = random.choice(TETROMINOES)
-
-# Keep Pac-Man's starting square clear.
-st.session_state.pac_game_grid[4][2] = "▪️"
-
-if st.session_state.quest_questions is None:
-    st.session_state.quest_questions = random.sample(
-        PHANTOM_QUEST_QUESTIONS, 5
-    )
 
 # ============================================================
 # CUSTOM HALLOWEEN THEME
@@ -135,21 +117,14 @@ st.markdown("""
 <style>
 .stApp {
     background-color: #0F0C20;
-    background-image: radial-gradient(
-        circle,
-        #241442 0%,
-        #0F0C20 100%
-    );
+    background-image: radial-gradient(circle, #241442 0%, #0F0C20 100%);
     color: #E0E0E0;
 }
-
 h1, h2, h3 {
     color: #FF5E00 !important;
     font-family: 'Courier New', Courier, monospace;
-    text-shadow: 2px 2px 4px #000000,
-                 0 0 10px #9D00FF;
+    text-shadow: 2px 2px 4px #000000, 0 0 10px #9D00FF;
 }
-
 .stButton > button {
     background-color: #9D00FF !important;
     color: white !important;
@@ -159,26 +134,12 @@ h1, h2, h3 {
     box-shadow: 0 0 8px #9D00FF;
     transition: all 0.3s ease;
 }
-
 .stButton > button:hover {
     background-color: #FF5E00 !important;
     border: 2px solid #9D00FF !important;
     box-shadow: 0 0 15px #FF5E00;
     transform: scale(1.05);
 }
-
-@keyframes float {
-    0% { transform: translate(0, 0px); }
-    50% { transform: translate(0, -15px); }
-    100% { transform: translate(0, 0px); }
-}
-
-.ghost-style {
-    font-size: 55px;
-    animation: float 3s ease-in-out infinite;
-    text-align: center;
-}
-
 .spooky-box {
     background-color: #241442;
     border: 2px solid #9D00FF;
@@ -195,30 +156,24 @@ h1, h2, h3 {
 # ============================================================
 
 def speak_like_a_monster(text, pitch=0.7, rate=0.8):
-
     safe_text = json.dumps(text)
-
     html = f"""
     <script>
     (function() {{
         if ('speechSynthesis' in window) {{
             window.speechSynthesis.cancel();
-
             var msg = new SpeechSynthesisUtterance({safe_text});
             msg.pitch = {pitch};
             msg.rate = {rate};
-
             window.speechSynthesis.speak(msg);
         }}
     }})();
     </script>
     """
-
-    st.components.v1.html(html, height=0)
+    components.html(html, height=0)
 
 
 def reset_phantom_quest():
-
     st.session_state.quest_round = 1
     st.session_state.quest_score = 0
     st.session_state.quest_questions = random.sample(
@@ -229,23 +184,20 @@ def reset_phantom_quest():
 
 
 def reset_graveyard_game():
-
     st.session_state.graveyard_round = 1
     st.session_state.graveyard_score = 0
     st.session_state.graveyard_completed = False
 
 
 # ============================================================
-# TETRIS GAME HELPERS
+# TETRIS GAME FUNCTIONS
 # ============================================================
 
 def tetris_fits(shape, x, y):
-
     board = st.session_state.tetris_board
 
     for row_index, row in enumerate(shape):
         for col_index, cell in enumerate(row):
-
             if not cell:
                 continue
 
@@ -262,13 +214,10 @@ def tetris_fits(shape, x, y):
 
 
 def tetris_spawn_piece():
-
     st.session_state.tetris_piece = random.choice(TETROMINOES)
-
-    st.session_state.active_shape = random.choice([
-        "🟧", "🟪", "🟦", "🟩"
-    ])
-
+    st.session_state.active_shape = random.choice(
+        ["🟧", "🟪", "🟦", "🟩"]
+    )
     st.session_state.piece_x = 2
     st.session_state.piece_y = 0
 
@@ -281,15 +230,12 @@ def tetris_spawn_piece():
 
 
 def tetris_lock_piece():
-
     board = st.session_state.tetris_board
     shape = st.session_state.tetris_piece
 
     for row_index, row in enumerate(shape):
         for col_index, cell in enumerate(row):
-
             if cell:
-
                 board_y = st.session_state.piece_y + row_index
                 board_x = st.session_state.piece_x + col_index
 
@@ -297,9 +243,7 @@ def tetris_lock_piece():
                     st.session_state.tetris_game_over = True
                     return
 
-                board[board_y][board_x] = (
-                    st.session_state.active_shape
-                )
+                board[board_y][board_x] = st.session_state.active_shape
 
     remaining_rows = [
         row for row in board
@@ -309,14 +253,12 @@ def tetris_lock_piece():
     cleared = 10 - len(remaining_rows)
 
     if cleared:
-
         st.session_state.tetris_board = (
             [["⬛" for _ in range(6)] for _ in range(cleared)]
             + remaining_rows
         )
 
         points = [0, 100, 300, 500, 800][min(cleared, 4)]
-
         st.session_state.tetris_score += points
         st.session_state.tetris_lines += cleared
 
@@ -329,7 +271,6 @@ def tetris_lock_piece():
 
 
 def tetris_gravity_step():
-
     if st.session_state.tetris_game_over:
         return
 
@@ -346,16 +287,13 @@ def tetris_gravity_step():
 
 
 def tetris_rotate_piece():
-
     shape = st.session_state.tetris_piece
 
     rotated = [
         list(row) for row in zip(*shape[::-1])
     ]
 
-    # Wall kicks allow rotation near the board edges.
     for offset in (0, -1, 1, -2, 2):
-
         if tetris_fits(
             rotated,
             st.session_state.piece_x + offset,
@@ -367,27 +305,22 @@ def tetris_rotate_piece():
 
 
 def reset_tetris_game():
-
     st.session_state.tetris_board = [
         ["⬛" for _ in range(6)] for _ in range(10)
     ]
-
     st.session_state.piece_x = 2
     st.session_state.piece_y = 0
-
     st.session_state.tetris_piece = random.choice(TETROMINOES)
-
-    st.session_state.active_shape = random.choice([
-        "🟧", "🟪", "🟦", "🟩"
-    ])
-
+    st.session_state.active_shape = random.choice(
+        ["🟧", "🟪", "🟦", "🟩"]
+    )
     st.session_state.tetris_score = 0
     st.session_state.tetris_lines = 0
     st.session_state.tetris_game_over = False
 
 
 # ============================================================
-# EASTER EGG STATUS
+# UNLOCK STATUS
 # ============================================================
 
 all_eggs_found = (
@@ -401,7 +334,7 @@ all_eggs_found = (
 # ============================================================
 
 st.markdown(
-    "<div class='ghost-style'>👻</div>",
+    "<div style='font-size:55px;text-align:center;'>👻</div>",
     unsafe_allow_html=True
 )
 
@@ -412,12 +345,7 @@ st.write(
     "The ghosts, witches, and monsters are waiting for you!"
 )
 
-# ============================================================
-# FLOATING GHOST / SECRET ROOM UNLOCK
-# ============================================================
-
 if all_eggs_found and not st.session_state.ghost_dimension_unlocked:
-
     st.success(
         "All 3 Easter eggs have been discovered! "
         "The floating ghost is glowing!"
@@ -427,25 +355,19 @@ if all_eggs_found and not st.session_state.ghost_dimension_unlocked:
         "✨ The Floating Ghost is glowing! CLICK ME! ✨",
         use_container_width=True
     ):
-
         st.session_state.ghost_dimension_unlocked = True
-
         st.toast(
             "The air grows cold... A secret room has opened!",
             icon="🔮"
         )
-
         st.rerun()
 
-
 if not all_eggs_found:
-
     discovered = sum([
         st.session_state.egg_porch,
         st.session_state.egg_story,
         st.session_state.egg_candy
     ])
-
     st.caption(f"🤫 Secrets Discovered: {discovered} / 3")
 
 st.divider()
@@ -479,12 +401,12 @@ page = st.sidebar.selectbox(
     "Choose Your Activity:",
     menu_options
 )
+
 # ============================================================
 # PAGE 1: FRONT PORCH
 # ============================================================
 
 if page == "🚪 Front Porch":
-
     st.header("🚪 Welcome to the Mansion")
 
     st.markdown(
@@ -508,33 +430,25 @@ if page == "🚪 Front Porch":
     """)
 
     if st.button("Knock on the Door 🚪"):
-
         with st.spinner("The door is slowly opening..."):
             time.sleep(1)
 
         if st.session_state.graveyard_completed:
-
             st.session_state.arcade_unlocked = True
-
             st.success(
                 "👑 The monster bows and welcomes you back! "
                 "Both arcade stations are now unlocked in the sidebar."
             )
-
             st.balloons()
             st.rerun()
-
         else:
-
             st.error(
                 "A mysterious voice whispers: "
                 "'Who dares enter my haunted mansion?!'"
             )
-
             st.balloons()
 
     st.divider()
-
     st.subheader("🤫 A Secret Message")
 
     st.write(
@@ -548,23 +462,15 @@ if page == "🚪 Front Porch":
     )
 
     if st.button("Unlock the Secret"):
-
         if passphrase.strip().lower() == "neon mint":
-
             st.session_state.egg_porch = True
-
             st.success(
                 "🎉 Easter Egg #1 discovered! "
                 "You found the hidden neon mint secret!"
             )
-
             st.balloons()
-
         else:
-
-            st.warning(
-                "That is not the secret phrase. Try again!"
-            )
+            st.warning("That is not the secret phrase. Try again!")
 
     if st.session_state.egg_porch:
         st.success("✅ Easter Egg #1: Discovered!")
@@ -575,7 +481,6 @@ if page == "🚪 Front Porch":
 # ============================================================
 
 elif page == "📖 Spooky Story Generator":
-
     st.header("📜 Create Your Own Spooky Tale")
 
     st.write(
@@ -586,41 +491,34 @@ elif page == "📖 Spooky Story Generator":
     col1, col2 = st.columns(2)
 
     with col1:
-
         protagonist = st.text_input(
             "Main Character's Name",
             value="Count Dracula"
         )
-
         adjective = st.text_input(
             "Spooky Adjective",
             value="creepy"
         )
-
         creature = st.text_input(
             "Monster or Creature",
             value="Vampire"
         )
 
     with col2:
-
         place = st.text_input(
             "Creepy Place",
             value="The Haunted Castle"
         )
-
         object_held = st.text_input(
             "An Object",
             value="Magic Wand"
         )
-
         exclamation = st.text_input(
             "Scared Exclamation",
             value="Help! A Ghost!"
         )
 
     if st.button("🔮 Conjure Story"):
-
         story = f"""
         It was a dark and stormy night at {place}.
 
@@ -654,12 +552,10 @@ elif page == "📖 Spooky Story Generator":
         st.info(st.session_state.story_text)
 
     if protagonist.strip().lower() == "goofy gang":
-
         st.success(
             "🎉 Easter Egg #2 discovered! "
             "The legendary Goofy Gang has entered the mansion!"
         )
-
         st.session_state.egg_story = True
 
     if st.session_state.egg_story:
@@ -671,7 +567,6 @@ elif page == "📖 Spooky Story Generator":
 # ============================================================
 
 elif page == "🍬 Trick or Treat Roulette":
-
     st.header("🍬 Trick or Treat Roulette")
 
     st.write(
@@ -687,12 +582,9 @@ elif page == "🍬 Trick or Treat Roulette":
         unsafe_allow_html=True
     )
 
-    st.write(
-        f"🎯 Candy draws: {st.session_state.draw_count}"
-    )
+    st.write(f"🎯 Candy draws: {st.session_state.draw_count}")
 
     if st.button("🎃 Draw from the Bowl 🍬"):
-
         st.session_state.draw_count += 1
 
         outcomes = [
@@ -724,32 +616,21 @@ elif page == "🍬 Trick or Treat Roulette":
         ]
 
         result = random.choice(outcomes)
-
         st.session_state.last_candy_result = result
 
         if st.session_state.draw_count >= 5:
             st.session_state.egg_candy = True
 
     if st.session_state.last_candy_result:
-
         result = st.session_state.last_candy_result
 
         if result["type"] == "Treat":
-
-            st.success(
-                f"{result['icon']} {result['text']}"
-            )
-
+            st.success(f"{result['icon']} {result['text']}")
             st.snow()
-
         else:
-
-            st.error(
-                f"{result['icon']} {result['text']}"
-            )
+            st.error(f"{result['icon']} {result['text']}")
 
     if st.session_state.egg_candy:
-
         st.success(
             "💀 EASTER EGG #3 UNLOCKED! "
             "You discovered the hidden golden skull token!"
@@ -766,7 +647,6 @@ elif page == "🍬 Trick or Treat Roulette":
 # ============================================================
 
 elif page == "🔮 Monster Mash Soundboard":
-
     st.header("🎵 The Monster Mash Board")
 
     st.write(
@@ -777,11 +657,8 @@ elif page == "🔮 Monster Mash Soundboard":
     c1, c2, c3 = st.columns(3)
 
     with c1:
-
         if st.button("🐺 Werewolf"):
-
             st.write("🐺 AWOOOOOOOOO!")
-
             speak_like_a_monster(
                 "Ah-wwooooo! Ow-ow-ow-wwoooo! Grrrr.",
                 0.2,
@@ -789,11 +666,8 @@ elif page == "🔮 Monster Mash Soundboard":
             )
 
     with c2:
-
         if st.button("🧛 Vampire"):
-
             st.write("🧛 Mwahahahahaha!")
-
             speak_like_a_monster(
                 "Mwahahahahaha! Ahahahaha!",
                 0.5,
@@ -801,11 +675,8 @@ elif page == "🔮 Monster Mash Soundboard":
             )
 
     with c3:
-
         if st.button("🧟 Zombie"):
-
             st.write("🧟 Braaaaains...")
-
             speak_like_a_monster(
                 "Uuuuuurrrrgh. Grrrrroaaaannn. Hhhhungggerrr.",
                 0.1,
@@ -818,11 +689,8 @@ elif page == "🔮 Monster Mash Soundboard":
 # ============================================================
 
 elif page == "🌌 The Ghost Dimension":
-
     if st.session_state.ghost_dimension_unlocked:
-
         st.header("🌌 Welcome to the Ghost Dimension")
-
         st.balloons()
 
         st.write("""
@@ -843,12 +711,10 @@ elif page == "🌌 The Ghost Dimension":
         )
 
         if not st.session_state.phantom_summoned:
-
             if st.button(
                 "🔮 Summon The Grand Phantom Presence",
                 use_container_width=True
             ):
-
                 st.session_state.phantom_summoned = True
 
                 speak_like_a_monster(
@@ -861,23 +727,15 @@ elif page == "🌌 The Ghost Dimension":
                 st.success(
                     "The Grand Phantom has recognized your bravery! 🏆"
                 )
-
                 st.balloons()
                 st.rerun()
-
         else:
-
-            st.success(
-                "🏆 The Grand Phantom has been summoned!"
-            )
-
+            st.success("🏆 The Grand Phantom has been summoned!")
             st.info(
                 "A new challenge has appeared in your sidebar: "
                 "👻 Phantom Quest!"
             )
-
     else:
-
         st.error("This dimension is still locked!")
 
 
@@ -886,9 +744,7 @@ elif page == "🌌 The Ghost Dimension":
 # ============================================================
 
 elif page == "👻 Phantom Quest":
-
     if st.session_state.phantom_summoned:
-
         st.header("👻 Phantom Quest: True or False")
 
         st.write("""
@@ -909,24 +765,20 @@ elif page == "👻 Phantom Quest":
         )
 
         if st.session_state.quest_failed:
-
             st.error(
                 "💀 Incorrect answer! Your streak has ended. "
                 "The ghosts have sent you back to the beginning!"
             )
 
             if st.button("🔄 Try Phantom Quest Again"):
-
                 reset_phantom_quest()
                 st.rerun()
 
         elif st.session_state.phantom_quest_completed:
-
             st.success(
                 "🎉 You escaped the mansion! "
                 "You answered five questions correctly in a row!"
             )
-
             st.balloons()
 
             st.info(
@@ -935,12 +787,10 @@ elif page == "👻 Phantom Quest":
             )
 
             if st.button("🔄 Play Phantom Quest Again"):
-
                 reset_phantom_quest()
                 st.rerun()
 
         else:
-
             current_question = st.session_state.quest_questions[
                 st.session_state.quest_round - 1
             ]
@@ -957,51 +807,41 @@ elif page == "👻 Phantom Quest":
             col1, col2 = st.columns(2)
 
             with col1:
-
                 if st.button(
                     "🚪 TRUE",
                     key=f"quest_true_{st.session_state.quest_round}",
                     use_container_width=True
                 ):
-
                     if current_question["answer"] is True:
-
                         st.session_state.quest_score += 1
 
                         if st.session_state.quest_score == 5:
                             st.session_state.phantom_quest_completed = True
                         else:
                             st.session_state.quest_round += 1
-
                     else:
                         st.session_state.quest_failed = True
 
                     st.rerun()
 
             with col2:
-
                 if st.button(
                     "🚪 FALSE",
                     key=f"quest_false_{st.session_state.quest_round}",
                     use_container_width=True
                 ):
-
                     if current_question["answer"] is False:
-
                         st.session_state.quest_score += 1
 
                         if st.session_state.quest_score == 5:
                             st.session_state.phantom_quest_completed = True
                         else:
                             st.session_state.quest_round += 1
-
                     else:
                         st.session_state.quest_failed = True
 
                     st.rerun()
-
     else:
-
         st.error("This dimension is still locked!")
 
 
@@ -1010,9 +850,7 @@ elif page == "👻 Phantom Quest":
 # ============================================================
 
 elif page == "🎃 The Haunted Graveyard":
-
     if st.session_state.phantom_quest_completed:
-
         st.header("🎃 The Haunted Graveyard")
 
         st.write("""
@@ -1041,11 +879,9 @@ elif page == "🎃 The Haunted Graveyard":
         ]
 
         if st.session_state.graveyard_completed:
-
             st.success(
                 "🏆 YOU ARE THE MASTER OF THE HAUNTED GRAVEYARD!"
             )
-
             st.balloons()
 
             st.markdown(
@@ -1063,12 +899,10 @@ elif page == "🎃 The Haunted Graveyard":
             )
 
             if st.button("🔄 Play Haunted Graveyard Again"):
-
                 reset_graveyard_game()
                 st.rerun()
 
         else:
-
             current_round = st.session_state.graveyard_round
             riddle = riddles[current_round - 1]
 
@@ -1082,23 +916,14 @@ elif page == "🎃 The Haunted Graveyard":
             )
 
             st.subheader("🧩 Solve the Mystery")
-
             st.write(riddle["question"])
 
-            with st.form(
-                key=f"graveyard_riddle_{current_round}"
-            ):
-
+            with st.form(key=f"graveyard_riddle_{current_round}"):
                 answer = st.text_input("Your answer:")
-
-                submitted = st.form_submit_button(
-                    "🔮 Submit Answer"
-                )
+                submitted = st.form_submit_button("🔮 Submit Answer")
 
             if submitted:
-
                 if answer.strip().lower() in riddle["answers"]:
-
                     st.session_state.graveyard_score += 1
 
                     st.success(
@@ -1111,302 +936,545 @@ elif page == "🎃 The Haunted Graveyard":
                         st.session_state.graveyard_round += 1
 
                     st.rerun()
-
                 else:
-
                     st.error(
                         "💀 Not quite! The spirits are not convinced."
                     )
-
     else:
-
         st.error(
             "This adventure is locked! "
             "Complete Phantom Quest first."
         )
+
+
 # ============================================================
-# BONUS PAGE 8: NORMAL GOOFY GANG PAC-MAN
+# PAC-MAN ARCADE — SMOOTH CLASSIC PAC-MAN
 # ============================================================
 
 elif page == "🟡 Pac-Man Arcade":
-
     if not st.session_state.arcade_unlocked:
-
-        st.error(
-            "This arcade station is locked. Complete the Haunted "
-            "Graveyard and knock on the Front Porch door!"
-        )
-
+        st.error("Complete the Haunted Graveyard to unlock the arcade.")
     else:
-
-        st.header("🟡 Retro Pac-Man Arcade")
+        st.header("🟡 Classic Pac-Man Arcade")
 
         st.write(
-            "Clear the candy from the 5×5 maze while avoiding "
-            "the four ghosts. Each candy is worth 10 points."
+            "Eat the dots, collect power pellets, avoid the ghosts, "
+            "and clear the maze!"
         )
 
-        st.markdown(
-            "<div class='spooky-box'>"
-            "<h3>🍬 Collect every candy and escape the ghosts!</h3>"
-            "<p>Use the directional buttons to move one square at a time.</p>"
-            "</div>",
-            unsafe_allow_html=True
-        )
+        # The game runs in the browser for smooth animation.
+        pacman_html = r"""
+        <div id="pacman-app">
+          <div class="hud">
+            <div>SCORE <span id="score">0</span></div>
+            <div>HIGH SCORE <span id="highscore">0</span></div>
+            <div>LIVES <span id="lives">3</span></div>
+          </div>
+          <canvas id="game" width="560" height="620"></canvas>
+          <div class="controls">
+            <button data-dir="up">▲</button>
+            <div>
+              <button data-dir="left">◀</button>
+              <button data-dir="down">▼</button>
+              <button data-dir="right">▶</button>
+            </div>
+          </div>
+          <div class="game-actions">
+            <button id="start">NEW GAME</button>
+            <span id="message">Use arrow keys or WASD to move</span>
+          </div>
+        </div>
+        <style>
+          #pacman-app {
+            background:#050510;
+            color:#fff;
+            padding:12px;
+            border:3px solid #172cff;
+            border-radius:14px;
+            text-align:center;
+            font-family:Arial,sans-serif;
+            max-width:600px;
+            margin:auto;
+          }
+          #pacman-app .hud {
+            display:flex;
+            justify-content:space-around;
+            gap:8px;
+            color:#ffe600;
+            font-weight:bold;
+            font-size:13px;
+            padding:8px 0;
+          }
+          #pacman-app canvas {
+            width:100%;
+            height:auto;
+            max-width:560px;
+            display:block;
+            margin:auto;
+            background:#000;
+            border-radius:6px;
+          }
+          #pacman-app button {
+            background:#172cff;
+            color:white;
+            border:2px solid #4d8dff;
+            border-radius:9px;
+            padding:10px 15px;
+            margin:3px;
+            font-weight:bold;
+            cursor:pointer;
+            touch-action:manipulation;
+          }
+          #pacman-app button:active {
+            background:#ffb900;
+            color:#000;
+          }
+          #pacman-app .controls {
+            padding:8px;
+          }
+          #pacman-app .controls button {
+            min-width:55px;
+            min-height:42px;
+          }
+          #pacman-app .game-actions {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:8px;
+            padding:8px;
+            font-size:12px;
+          }
+          #pacman-app #message {
+            color:#ffe600;
+          }
+        </style>
+        <script>
+        (() => {
+          const canvas = document.getElementById("game");
+          const ctx = canvas.getContext("2d");
+          const scoreEl = document.getElementById("score");
+          const highEl = document.getElementById("highscore");
+          const livesEl = document.getElementById("lives");
+          const messageEl = document.getElementById("message");
 
-        remaining_candy = sum(
-            cell == "🍬"
-            for row in st.session_state.pac_game_grid
-            for cell in row
-        )
+          const TILE = 28;
+          const COLS = 20;
+          const ROWS = 22;
+          const W = COLS * TILE;
+          const H = ROWS * TILE;
 
-        st.subheader(
-            f"Score: {st.session_state.pac_score} 🌟  |  "
-            f"Candies left: {remaining_candy} 🍬"
-        )
+          const raw = [
+            "####################",
+            "#........##........#",
+            "#.##.###.##.###.##.#",
+            "#o##.###.##.###.##o#",
+            "#..................#",
+            "#.##.##.######.##..#",
+            "#....##...##...##..#",
+            "####.###.##.###.####",
+            "####.##......##.####",
+            "####.##.####.##.####",
+            "......#..GG..#......",
+            "####.##.####.##.####",
+            "####.##......##.####",
+            "####.###.##.###.####",
+            "#........##........#",
+            "#.##.###.##.###.##.#",
+            "#o.#...........#.o.#",
+            "##.#.##.######.#.###",
+            "#....##...##...##..#",
+            "#.######.##.######.#",
+            "#..................#",
+            "####################"
+          ];
 
-        if st.session_state.pac_game_won:
+          const maze = raw.map(row => row.split(""));
+          const original = raw.map(row => row.split(""));
 
-            st.success(
-                "🏆 You cleared the maze! "
-                "You are the Pac-Man champion!"
-            )
+          const colors = ["#ff3030","#ff91d2","#26d9ff","#ff9b28"];
+          const ghostStarts = [
+            {x:9.5,y:10.5},
+            {x:10.5,y:10.5},
+            {x:9.5,y:11.5},
+            {x:10.5,y:11.5}
+          ];
 
-            st.balloons()
+          let player, ghosts, score, lives, power, powerTimer;
+          let direction, nextDirection, running, gameOver, won;
+          let lastTime = 0;
+          let high = 0;
 
-        else:
+          try {
+            high = Number(localStorage.getItem("hauntedPacHigh") || 0);
+          } catch(e) {}
+          highEl.textContent = high;
 
-            display_grid = [
-                row[:] for row in st.session_state.pac_game_grid
-            ]
+          function resetPositions() {
+            player = {
+              x: 9.5 * TILE,
+              y: 16.5 * TILE,
+              dir: {x:0,y:0},
+              speed: 115,
+              radius: 10
+            };
+            direction = {x:0,y:0};
+            nextDirection = {x:0,y:0};
 
-            for ghost in st.session_state.pac_ghosts:
+            ghosts = ghostStarts.map((p,i) => ({
+              x:p.x*TILE,
+              y:p.y*TILE,
+              color:colors[i],
+              dir:{x:0,y:0},
+              speed: i===0 ? 83 : 75,
+              frightened:false,
+              homeX:p.x*TILE,
+              homeY:p.y*TILE
+            }));
 
-                display_grid[ghost["y"]][ghost["x"]] = ghost["color"]
+            power = false;
+            powerTimer = 0;
+          }
 
-            display_grid[
-                st.session_state.pac_y
-            ][
-                st.session_state.pac_x
-            ] = "🟡"
+          function resetGame() {
+            for(let y=0;y<ROWS;y++) {
+              for(let x=0;x<COLS;x++) {
+                maze[y][x] = original[y][x];
+              }
+            }
+            score = 0;
+            lives = 3;
+            gameOver = false;
+            won = false;
+            running = true;
+            resetPositions();
+            updateHud();
+            messageEl.textContent = "Eat all the dots!";
+          }
 
-            st.markdown(
-                "<div style='background:#090909; border:3px solid #2875ff; "
-                "border-radius:12px; padding:14px; width:fit-content; "
-                "margin:0 auto; box-shadow:0 0 14px #2875ff;'>",
-                unsafe_allow_html=True
-            )
+          function updateHud() {
+            scoreEl.textContent = score;
+            livesEl.textContent = lives;
+            if(score > high) {
+              high = score;
+              highEl.textContent = high;
+              try {
+                localStorage.setItem("hauntedPacHigh", String(high));
+              } catch(e) {}
+            }
+          }
 
-            for row in display_grid:
+          function wallAtPixel(px,py) {
+            const c = Math.floor(px/TILE);
+            const r = Math.floor(py/TILE);
+            if(r<0 || r>=ROWS || c<0 || c>=COLS) return true;
+            return maze[r][c] === "#";
+          }
 
-                st.markdown(
-                    "<div style='font-size:34px; line-height:1.55; "
-                    "letter-spacing:10px; text-align:center;'>"
-                    + " ".join(row)
-                    + "</div>",
-                    unsafe_allow_html=True
-                )
+          function canMove(entity,dir) {
+            if(dir.x===0 && dir.y===0) return true;
+            const margin = entity.radius ? entity.radius-2 : 7;
+            const nx = entity.x + dir.x * 4;
+            const ny = entity.y + dir.y * 4;
+            const points = [
+              [nx-margin,ny-margin],
+              [nx+margin,ny-margin],
+              [nx-margin,ny+margin],
+              [nx+margin,ny+margin]
+            ];
+            return points.every(p => !wallAtPixel(p[0],p[1]));
+          }
 
-            st.markdown("</div>", unsafe_allow_html=True)
+          function aligned(entity) {
+            return (
+              Math.abs((entity.x % TILE) - TILE/2) < 3 &&
+              Math.abs((entity.y % TILE) - TILE/2) < 3
+            );
+          }
 
-            st.caption(
-                "🟡 Pac-Man  |  🍬 Candy  |  🔴 💖 🔵 🧡 Ghosts"
-            )
+          function eatTile() {
+            const c = Math.floor(player.x/TILE);
+            const r = Math.floor(player.y/TILE);
+            if(r<0 || r>=ROWS || c<0 || c>=COLS) return;
 
-            st.write("### Move Pac-Man")
+            if(maze[r][c] === ".") {
+              maze[r][c] = " ";
+              score += 10;
+              updateHud();
+            } else if(maze[r][c] === "o") {
+              maze[r][c] = " ";
+              score += 50;
+              power = true;
+              powerTimer = 8;
+              ghosts.forEach(g => g.frightened = true);
+              updateHud();
+              messageEl.textContent = "POWER PELLET! Eat the ghosts!";
+            }
 
-            top_pad, top_center, top_pad_right = st.columns(3)
+            let dots = 0;
+            for(let y=0;y<ROWS;y++) {
+              for(let x=0;x<COLS;x++) {
+                if(maze[y][x]==="." || maze[y][x]==="o") dots++;
+              }
+            }
+            if(dots===0) {
+              won = true;
+              running = false;
+              messageEl.textContent = "YOU CLEARED THE MAZE!";
+            }
+          }
 
-            with top_center:
-                up_pressed = st.button(
-                    "🔼 Up",
-                    key="normal_pac_up",
-                    use_container_width=True
-                )
+          function movePlayer(dt) {
+            if(aligned(player) && canMove(player,nextDirection)) {
+              direction = {...nextDirection};
+            }
 
-            left_col, middle_pad, right_col = st.columns(3)
+            if(!canMove(player,direction)) {
+              if(aligned(player)) {
+                direction = {x:0,y:0};
+              }
+            }
 
-            with left_col:
-                left_pressed = st.button(
-                    "◀️ Left",
-                    key="normal_pac_left",
-                    use_container_width=True
-                )
+            if(direction.x!==0 || direction.y!==0) {
+              player.x += direction.x * player.speed * dt;
+              player.y += direction.y * player.speed * dt;
+            }
 
-            with right_col:
-                right_pressed = st.button(
-                    "Right ▶️",
-                    key="normal_pac_right",
-                    use_container_width=True
-                )
+            player.x = Math.max(TILE/2,Math.min(W-TILE/2,player.x));
+            player.y = Math.max(TILE/2,Math.min(H-TILE/2,player.y));
+            eatTile();
+          }
 
-            bottom_pad, bottom_center, bottom_pad_right = st.columns(3)
+          function ghostChoices(g) {
+            const dirs = [
+              {x:1,y:0},{x:-1,y:0},
+              {x:0,y:1},{x:0,y:-1}
+            ];
+            return dirs.filter(d => {
+              if(d.x===-g.dir.x && d.y===-g.dir.y) return false;
+              return canMove(g,d);
+            });
+          }
 
-            with bottom_center:
-                down_pressed = st.button(
-                    "🔽 Down",
-                    key="normal_pac_down",
-                    use_container_width=True
-                )
+          function moveGhost(g,dt,index) {
+            if(aligned(g)) {
+              let choices = ghostChoices(g);
+              if(choices.length===0) {
+                g.dir = {x:0,y:0};
+              } else {
+                let target;
+                if(g.frightened) {
+                  target = {x:player.x,y:player.y};
+                  choices.sort(() => Math.random()-0.5);
+                  g.dir = choices[0];
+                } else {
+                  target = {
+                    x:player.x + (index%2===0 ? 30 : -30),
+                    y:player.y
+                  };
+                  choices.sort((a,b) => {
+                    const da = Math.hypot(
+                      g.x+a.x*TILE-target.x,
+                      g.y+a.y*TILE-target.y
+                    );
+                    const db = Math.hypot(
+                      g.x+b.x*TILE-target.x,
+                      g.y+b.y*TILE-target.y
+                    );
+                    return da-db;
+                  });
+                  g.dir = choices[0];
+                }
+              }
+            }
 
-            move = None
+            if(canMove(g,g.dir)) {
+              g.x += g.dir.x*g.speed*dt;
+              g.y += g.dir.y*g.speed*dt;
+            } else {
+              g.dir = {x:0,y:0};
+            }
+          }
 
-            if up_pressed:
-                move = (0, -1)
-            elif down_pressed:
-                move = (0, 1)
-            elif left_pressed:
-                move = (-1, 0)
-            elif right_pressed:
-                move = (1, 0)
+          function collisionCheck() {
+            for(let i=0;i<ghosts.length;i++) {
+              const g = ghosts[i];
+              const d = Math.hypot(player.x-g.x,player.y-g.y);
+              if(d < 17) {
+                if(power || g.frightened) {
+                  score += 200;
+                  updateHud();
+                  g.x = g.homeX;
+                  g.y = g.homeY;
+                  g.dir = {x:0,y:0};
+                  g.frightened = false;
+                } else {
+                  lives--;
+                  updateHud();
+                  if(lives<=0) {
+                    gameOver = true;
+                    running = false;
+                    messageEl.textContent = "GAME OVER — Press NEW GAME";
+                  } else {
+                    resetPositions();
+                    messageEl.textContent = "Ouch! Watch out for the ghosts!";
+                  }
+                  break;
+                }
+              }
+            }
+          }
 
-            if move is not None:
+          function drawMaze() {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0,0,W,H);
 
-                new_x = max(
-                    0,
-                    min(4, st.session_state.pac_x + move[0])
-                )
+            for(let y=0;y<ROWS;y++) {
+              for(let x=0;x<COLS;x++) {
+                const cell = maze[y][x];
+                const px=x*TILE, py=y*TILE;
 
-                new_y = max(
-                    0,
-                    min(4, st.session_state.pac_y + move[1])
-                )
+                if(cell==="#") {
+                  ctx.fillStyle="#0614a8";
+                  ctx.fillRect(px+1,py+1,TILE-2,TILE-2);
+                  ctx.strokeStyle="#247bff";
+                  ctx.lineWidth=1.5;
+                  ctx.strokeRect(px+2,py+2,TILE-4,TILE-4);
+                } else if(cell===".") {
+                  ctx.fillStyle="#ffe6a3";
+                  ctx.beginPath();
+                  ctx.arc(px+TILE/2,py+TILE/2,2.5,0,Math.PI*2);
+                  ctx.fill();
+                } else if(cell==="o") {
+                  ctx.fillStyle="#fff";
+                  ctx.beginPath();
+                  ctx.arc(px+TILE/2,py+TILE/2,6,0,Math.PI*2);
+                  ctx.fill();
+                }
+              }
+            }
+          }
 
-                st.session_state.pac_x = new_x
-                st.session_state.pac_y = new_y
+          function drawPlayer() {
+            ctx.fillStyle="#ffe500";
+            ctx.beginPath();
+            let angle = Math.atan2(direction.y,direction.x);
+            if(direction.x===0 && direction.y===0) angle=0;
+            const mouth = 0.25 + Math.abs(Math.sin(Date.now()/90))*0.22;
+            ctx.moveTo(player.x,player.y);
+            ctx.arc(
+              player.x,player.y,player.radius,
+              angle+mouth,angle+Math.PI*2-mouth
+            );
+            ctx.closePath();
+            ctx.fill();
+          }
 
-                caught = any(
-                    ghost["x"] == new_x and ghost["y"] == new_y
-                    for ghost in st.session_state.pac_ghosts
-                )
+          function drawGhost(g) {
+            const x=g.x, y=g.y, r=10;
+            ctx.fillStyle=(power || g.frightened) ? "#285bff" : g.color;
+            ctx.beginPath();
+            ctx.arc(x,y-2,r,Math.PI,0);
+            ctx.lineTo(x+r,y+9);
+            ctx.lineTo(x+r/2,y+6);
+            ctx.lineTo(x,y+10);
+            ctx.lineTo(x-r/2,y+6);
+            ctx.lineTo(x-r,y+10);
+            ctx.closePath();
+            ctx.fill();
 
-                if not caught:
+            ctx.fillStyle="#fff";
+            ctx.beginPath();
+            ctx.arc(x-4,y-2,3.2,0,Math.PI*2);
+            ctx.arc(x+4,y-2,3.2,0,Math.PI*2);
+            ctx.fill();
 
-                    if (
-                        st.session_state.pac_game_grid[new_y][new_x]
-                        == "🍬"
-                    ):
+            ctx.fillStyle="#111";
+            ctx.beginPath();
+            ctx.arc(x-4,y-2,1.5,0,Math.PI*2);
+            ctx.arc(x+4,y-2,1.5,0,Math.PI*2);
+            ctx.fill();
+          }
 
-                        st.session_state.pac_game_grid[new_y][new_x] = "▪️"
+          function draw() {
+            drawMaze();
+            ghosts.forEach(drawGhost);
+            drawPlayer();
+          }
 
-                        st.session_state.pac_score += 10
+          function loop(timestamp) {
+            const dt=Math.min((timestamp-lastTime)/1000 || 0,0.035);
+            lastTime=timestamp;
 
-                        st.toast(
-                            "+10 points! Candy collected!",
-                            icon="🍬"
-                        )
+            if(running && !gameOver && !won) {
+              movePlayer(dt);
+              ghosts.forEach((g,i)=>moveGhost(g,dt,i));
+              collisionCheck();
 
-                    for ghost in st.session_state.pac_ghosts:
+              if(power) {
+                powerTimer-=dt;
+                if(powerTimer<=0) {
+                  power=false;
+                  ghosts.forEach(g=>g.frightened=false);
+                  messageEl.textContent="Keep collecting dots!";
+                }
+              }
+            }
 
-                        directions = [
-                            (0, -1),
-                            (0, 1),
-                            (-1, 0),
-                            (1, 0)
-                        ]
+            draw();
+            requestAnimationFrame(loop);
+          }
 
-                        random.shuffle(directions)
+          function setDirection(name) {
+            const map={
+              up:{x:0,y:-1},
+              down:{x:0,y:1},
+              left:{x:-1,y:0},
+              right:{x:1,y:0}
+            };
+            nextDirection=map[name];
+          }
 
-                        for dx, dy in directions:
+          window.addEventListener("keydown",e=>{
+            const keys={
+              ArrowUp:"up",w:"up",W:"up",
+              ArrowDown:"down",s:"down",S:"down",
+              ArrowLeft:"left",a:"left",A:"left",
+              ArrowRight:"right",d:"right",D:"right"
+            };
+            if(keys[e.key]) {
+              e.preventDefault();
+              setDirection(keys[e.key]);
+            }
+          });
 
-                            gx = ghost["x"] + dx
-                            gy = ghost["y"] + dy
+          document.querySelectorAll("#pacman-app [data-dir]").forEach(btn=>{
+            btn.addEventListener("pointerdown",e=>{
+              e.preventDefault();
+              setDirection(btn.dataset.dir);
+            });
+          });
 
-                            if 0 <= gx < 5 and 0 <= gy < 5:
+          document.getElementById("start").addEventListener("click",resetGame);
 
-                                ghost["x"] = gx
-                                ghost["y"] = gy
-                                break
+          resetGame();
+          requestAnimationFrame(loop);
+        })();
+        </script>
+        """
 
-                    caught = any(
-                        ghost["x"] == st.session_state.pac_x
-                        and ghost["y"] == st.session_state.pac_y
-                        for ghost in st.session_state.pac_ghosts
-                    )
-
-                if caught:
-
-                    st.session_state.pac_score = max(
-                        0,
-                        st.session_state.pac_score - 20
-                    )
-
-                    st.session_state.pac_x = 2
-                    st.session_state.pac_y = 4
-
-                    st.session_state.pac_ghosts = [
-                        {"x": 0, "y": 0, "color": "🔴"},
-                        {"x": 4, "y": 0, "color": "💖"},
-                        {"x": 0, "y": 2, "color": "🔵"},
-                        {"x": 4, "y": 2, "color": "🧡"}
-                    ]
-
-                    st.session_state.pac_last_event = "caught"
-
-                    st.toast(
-                        "A ghost caught you! -20 points. Try again!",
-                        icon="👻"
-                    )
-
-                else:
-
-                    st.session_state.pac_last_event = "moved"
-
-                    remaining = sum(
-                        cell == "🍬"
-                        for row in st.session_state.pac_game_grid
-                        for cell in row
-                    )
-
-                    if remaining == 0:
-                        st.session_state.pac_game_won = True
-
-                st.rerun()
-
-        if st.button(
-            "🔄 Reset Pac-Man Game",
-            key="normal_pac_reset"
-        ):
-
-            st.session_state.pac_x = 2
-            st.session_state.pac_y = 4
-            st.session_state.pac_score = 0
-
-            st.session_state.pac_game_grid = [
-                ["🍬" for _ in range(5)] for _ in range(5)
-            ]
-
-            st.session_state.pac_game_grid[4][2] = "▪️"
-
-            st.session_state.pac_ghosts = [
-                {"x": 0, "y": 0, "color": "🔴"},
-                {"x": 4, "y": 0, "color": "💖"},
-                {"x": 0, "y": 2, "color": "🔵"},
-                {"x": 4, "y": 2, "color": "🧡"}
-            ]
-
-            st.session_state.pac_game_won = False
-            st.session_state.pac_last_event = ""
-
-            st.rerun()
+        components.html(pacman_html, height=850, scrolling=False)
 
 
 # ============================================================
-# BONUS PAGE 9: PAC-MAN 67 ARCADE
+# PAC-MAN 67 STATION
 # ============================================================
 
 elif page == "🕹️ Pac-Man 67 Station":
-
     if not st.session_state.arcade_unlocked:
-
-        st.error(
-            "This arcade station is locked. Complete the Haunted "
-            "Graveyard and knock on the Front Porch door!"
-        )
-
+        st.error("Complete the Haunted Graveyard to unlock the arcade.")
     else:
-
-        st.header("🕹️ Classic Pac-Man 67 Hardware Simulation")
+        st.header("🕹️ Pac-Man 67 Hardware Simulation")
 
         st.write(
             "Collect the four corner power orbs, avoid the ghost, "
@@ -1414,50 +1482,35 @@ elif page == "🕹️ Pac-Man 67 Station":
         )
 
         if st.session_state.pm_game_over:
-
-            st.error(
-                "💀 GAME OVER! The ghost caught you in normal mode."
-            )
+            st.error("💀 GAME OVER! The ghost caught you in normal mode.")
 
             if st.button("🎮 Insert Coin to Retry"):
-
                 st.session_state.pm_x = 2
                 st.session_state.pm_y = 2
-
                 st.session_state.ghost_x = 4
                 st.session_state.ghost_y = 4
-
                 st.session_state.is_super_mode = False
                 st.session_state.super_mode_timer = 0
-
                 st.session_state.orbs_active = {
                     "Orb1": True,
                     "Orb2": True,
                     "Orb3": True,
                     "Orb4": True
                 }
-
                 st.session_state.pm_score = 0
                 st.session_state.pm_game_over = False
-
                 st.rerun()
 
         else:
-
-            st.subheader(
-                f"Score: {st.session_state.pm_score} 🌟"
-            )
+            st.subheader(f"Score: {st.session_state.pm_score} 🌟")
 
             if st.session_state.is_super_mode:
-
                 st.warning(
                     f"⚡ SUPER MODE ACTIVE — "
                     f"{st.session_state.super_mode_timer} moves remaining"
                 )
 
-            grid = [
-                ["▪️" for _ in range(5)] for _ in range(5)
-            ]
+            grid = [["▪️" for _ in range(5)] for _ in range(5)]
 
             orb_positions = {
                 "Orb1": (0, 0),
@@ -1467,14 +1520,12 @@ elif page == "🕹️ Pac-Man 67 Station":
             }
 
             for orb, (y, x) in orb_positions.items():
-
                 if st.session_state.orbs_active[orb]:
                     grid[y][x] = "🔮"
 
             ghost_icon = (
                 "💙" if st.session_state.is_super_mode else "🟢"
             )
-
             player_icon = (
                 "⚡" if st.session_state.is_super_mode else "🟡"
             )
@@ -1492,7 +1543,6 @@ elif page == "🕹️ Pac-Man 67 Station":
             ] = player_icon
 
             for row in grid:
-
                 st.markdown(
                     "<div style='font-size:30px; letter-spacing:8px;'>"
                     + " ".join(row)
@@ -1506,11 +1556,9 @@ elif page == "🕹️ Pac-Man 67 Station":
             )
 
             c1, c2, c3, c4 = st.columns(4)
-
             moved = False
 
             with c1:
-
                 if (
                     st.button("◀️ Left", key="pm_left")
                     and st.session_state.pm_x > 0
@@ -1519,7 +1567,6 @@ elif page == "🕹️ Pac-Man 67 Station":
                     moved = True
 
             with c2:
-
                 if (
                     st.button("▶️ Right", key="pm_right")
                     and st.session_state.pm_x < 4
@@ -1528,7 +1575,6 @@ elif page == "🕹️ Pac-Man 67 Station":
                     moved = True
 
             with c3:
-
                 if (
                     st.button("🔼 Up", key="pm_up")
                     and st.session_state.pm_y > 0
@@ -1537,7 +1583,6 @@ elif page == "🕹️ Pac-Man 67 Station":
                     moved = True
 
             with c4:
-
                 if (
                     st.button("🔽 Down", key="pm_down")
                     and st.session_state.pm_y < 4
@@ -1546,17 +1591,13 @@ elif page == "🕹️ Pac-Man 67 Station":
                     moved = True
 
             if moved:
-
                 for orb, (y, x) in orb_positions.items():
-
                     if (
                         st.session_state.pm_y == y
                         and st.session_state.pm_x == x
                         and st.session_state.orbs_active[orb]
                     ):
-
                         st.session_state.orbs_active[orb] = False
-
                         st.session_state.is_super_mode = True
                         st.session_state.super_mode_timer = 10
 
@@ -1565,81 +1606,50 @@ elif page == "🕹️ Pac-Man 67 Station":
                             icon="⚡"
                         )
 
-                # Move the ghost one step toward the player.
                 if st.session_state.ghost_x < st.session_state.pm_x:
-
                     st.session_state.ghost_x += 1
-
                 elif st.session_state.ghost_x > st.session_state.pm_x:
-
                     st.session_state.ghost_x -= 1
-
                 elif st.session_state.ghost_y < st.session_state.pm_y:
-
                     st.session_state.ghost_y += 1
-
                 elif st.session_state.ghost_y > st.session_state.pm_y:
-
                     st.session_state.ghost_y -= 1
 
                 if (
                     st.session_state.pm_x == st.session_state.ghost_x
                     and st.session_state.pm_y == st.session_state.ghost_y
                 ):
-
                     if st.session_state.is_super_mode:
-
                         st.session_state.pm_score += 10
+                        st.toast("Ghost caught! +10 points", icon="👻")
 
-                        st.toast(
-                            "Ghost caught! +10 points",
-                            icon="👻"
-                        )
-
-                        st.session_state.ghost_x, st.session_state.ghost_y = (
-                            random.choice([
-                                (0, 2),
-                                (2, 0),
-                                (4, 2),
-                                (2, 4)
-                            ])
-                        )
-
+                        (
+                            st.session_state.ghost_x,
+                            st.session_state.ghost_y
+                        ) = random.choice([
+                            (0, 2), (2, 0), (4, 2), (2, 4)
+                        ])
                     else:
-
                         st.session_state.pm_game_over = True
 
                 if st.session_state.is_super_mode:
-
                     st.session_state.super_mode_timer -= 1
 
                     if st.session_state.super_mode_timer <= 0:
-
                         st.session_state.is_super_mode = False
-
-                        st.toast(
-                            "Super Mode has expired!",
-                            icon="⏳"
-                        )
+                        st.toast("Super Mode has expired!", icon="⏳")
 
                 st.rerun()
 
 
 # ============================================================
-# BONUS PAGE 10: GOOFY GANG TETRIS
+# GOOFY GANG TETRIS
 # ============================================================
 
 elif page == "🧩 Goofy Gang Tetris":
-
     if not st.session_state.arcade_unlocked:
-
-        st.error(
-            "This arcade station is locked. Complete the Haunted "
-            "Graveyard and knock on the Front Porch door!"
-        )
-
+        st.error("Complete the Haunted Graveyard to unlock the arcade.")
     else:
-
         st.header("🧩 Goofy Gang Tetris")
 
         st.write(
@@ -1649,65 +1659,37 @@ elif page == "🧩 Goofy Gang Tetris":
 
         @st.fragment(run_every=0.8)
         def render_tetris_game():
-
             if not st.session_state.tetris_game_over:
-
                 tetris_gravity_step()
 
             score_col, lines_col = st.columns(2)
 
-            score_col.metric(
-                "Score",
-                st.session_state.tetris_score
-            )
-
-            lines_col.metric(
-                "Lines cleared",
-                st.session_state.tetris_lines
-            )
+            score_col.metric("Score", st.session_state.tetris_score)
+            lines_col.metric("Lines cleared", st.session_state.tetris_lines)
 
             if st.session_state.tetris_game_over:
+                st.error("💀 GAME OVER! Your blocks reached the top.")
 
-                st.error(
-                    "💀 GAME OVER! Your blocks reached the top."
-                )
-
-                if st.button(
-                    "🔄 Play Again",
-                    key="tetris_play_again"
-                ):
-
+                if st.button("🔄 Play Again", key="tetris_play_again"):
                     reset_tetris_game()
                     st.rerun()
 
                 return
 
-            # Draw the settled board and active falling piece.
             display_board = [
                 row[:] for row in st.session_state.tetris_board
             ]
 
-            for row_index, row in enumerate(
-                st.session_state.tetris_piece
-            ):
-
+            for row_index, row in enumerate(st.session_state.tetris_piece):
                 for col_index, cell in enumerate(row):
-
                     if cell:
-
-                        board_y = (
-                            st.session_state.piece_y + row_index
-                        )
-
-                        board_x = (
-                            st.session_state.piece_x + col_index
-                        )
+                        board_y = st.session_state.piece_y + row_index
+                        board_x = st.session_state.piece_x + col_index
 
                         if (
                             0 <= board_y < 10
                             and 0 <= board_x < 6
                         ):
-
                             display_board[board_y][board_x] = (
                                 st.session_state.active_shape
                             )
@@ -1726,55 +1708,45 @@ elif page == "🧩 Goofy Gang Tetris":
             left_btn, rotate_btn, right_btn, down_btn = st.columns(4)
 
             with left_btn:
-
                 if st.button(
                     "◀️ Left",
                     key="tetris_left",
                     use_container_width=True
                 ):
-
                     if tetris_fits(
                         st.session_state.tetris_piece,
                         st.session_state.piece_x - 1,
                         st.session_state.piece_y
                     ):
-
                         st.session_state.piece_x -= 1
 
             with rotate_btn:
-
                 if st.button(
                     "🔄 Rotate",
                     key="tetris_rotate",
                     use_container_width=True
                 ):
-
                     tetris_rotate_piece()
 
             with right_btn:
-
                 if st.button(
                     "Right ▶️",
                     key="tetris_right",
                     use_container_width=True
                 ):
-
                     if tetris_fits(
                         st.session_state.tetris_piece,
                         st.session_state.piece_x + 1,
                         st.session_state.piece_y
                     ):
-
                         st.session_state.piece_x += 1
 
             with down_btn:
-
                 if st.button(
                     "⬇️ Drop",
                     key="tetris_down",
                     use_container_width=True
                 ):
-
                     tetris_gravity_step()
 
             if st.button(
@@ -1782,13 +1754,11 @@ elif page == "🧩 Goofy Gang Tetris":
                 key="tetris_hard_drop",
                 use_container_width=True
             ):
-
                 while tetris_fits(
                     st.session_state.tetris_piece,
                     st.session_state.piece_x,
                     st.session_state.piece_y + 1
                 ):
-
                     st.session_state.piece_y += 1
 
                 tetris_lock_piece()
@@ -1799,11 +1769,7 @@ elif page == "🧩 Goofy Gang Tetris":
                 "immediately. Gravity runs automatically."
             )
 
-            if st.button(
-                "🧹 Reset Tetris",
-                key="tetris_reset"
-            ):
-
+            if st.button("🧹 Reset Tetris", key="tetris_reset"):
                 reset_tetris_game()
                 st.rerun()
 
