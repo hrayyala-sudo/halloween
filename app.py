@@ -382,5 +382,4 @@ st.rerun()
 
 --- FOOTER ---
 
-st.markdown("
-Made with 🧡 and 🔮 by a Spooky Developer", unsafe_allow_html=True)
+st.markdown("Made with 🧡 and 🔮 by a Spooky Developer", unsafe_allow_html=True)
