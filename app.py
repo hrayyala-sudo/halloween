@@ -247,7 +247,6 @@ elif page == "🌌 Haunted Graveyard" and st.session_state.ghost_dimension_unloc
         st.session_state.graveyard_finished = True
         st.success("The Grand Phantom whispers: 'The challenge is complete! Go back to the front porch and knock on the door.' 👑")
 
-Use code with caution.
 
 --- UNLOCKED BONUS PAGE 6: PAC-MAN 67 ARCADE ---
 
