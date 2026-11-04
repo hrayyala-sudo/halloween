@@ -248,7 +248,7 @@ elif page == "🌌 Haunted Graveyard" and st.session_state.ghost_dimension_unloc
         st.success("The Grand Phantom whispers: 'The challenge is complete! Go back to the front porch and knock on the door.' 👑")
 
 
---- UNLOCKED BONUS PAGE 6: PAC-MAN 67 ARCADE ---
+#--- UNLOCKED BONUS PAGE 6: PAC-MAN 67 ARCADE ---
 
 elif page == "🕹️ Pac-Man 67 Station" and st.session_state.arcade_unlocked:
 st.header("🕹️ Classic Pac Man 67 Hardware Simulation")
